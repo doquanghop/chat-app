@@ -1,14 +1,32 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/chat_db
-    username: chat_user
-    password: chat_password
+    username: root
+    password: Hop2005@
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: Hop2005@
+      timeout: 2000
+  security:
+    jwt:
+      secret: TaqlmGv1iEDMRiFp/pHuID1+T84IK23DF2KJDBf43sdf24ds2fuA0xXh4GhiUI=
+      expiration: 86400
+
+  openapi:
+    service:
+      api-docs: Telegram API
+      server: http://localhost:8088,http://api.dqhdev.io.vn
+      title: API Service
+      version: 1.0.0
+
 server:
-  port: 8080
-jwt:
-  secret: your-secret-key-here
+  port: 8088
+

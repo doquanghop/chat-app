@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class AccountSession {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
+
     @Column(name = "account_id")
     String accountId;
 
@@ -32,4 +35,5 @@ public class AccountSession {
 
     @Column(name = "is_active")
     boolean isActive;
+
 }

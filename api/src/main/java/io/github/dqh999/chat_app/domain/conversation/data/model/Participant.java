@@ -1,0 +1,27 @@
+package io.github.dqh999.chat_app.domain.conversation.data.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "participants")
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Participant {
+    @Id
+    String id;
+    @Column(name = "conversation_id")
+    String conversationId;
+    @Column(name = "account_id")
+    String accountId;
+    @Enumerated(EnumType.STRING)
+    ParticipantRole role;
+    @Column(name = "joined_at")
+    LocalDateTime joinedAt;
+}

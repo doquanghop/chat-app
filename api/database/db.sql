@@ -36,7 +36,7 @@ create table participants
     role            varchar(20) not null,
     foreign key (conversation_id) references conversations (id),
     foreign key (account_id) references accounts (id)
-)
+);
 create table messages
 (
     id              varchar(45) primary key,

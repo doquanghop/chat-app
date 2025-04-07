@@ -1,9 +1,9 @@
 services:
-  postgres:
+  chat_app:
     image: postgres:15
     container_name: chat_app
     environment:
-      POSTGRES_USER: user
+      POSTGRES_USER: root
       POSTGRES_PASSWORD: Hop2005@
       POSTGRES_DB: chat_db
     ports:
@@ -13,8 +13,20 @@ services:
     networks:
       - chat-network
 
+  chat_app_redis:
+    container_name: chat_app_redis
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - chat_redis_data:/data
+    networks:
+      - chat-network
+
 volumes:
   chat_postgres_data:
+  chat_redis_data:
 
 networks:
   chat-network:
