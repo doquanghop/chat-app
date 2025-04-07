@@ -1,0 +1,35 @@
+package io.github.dqh999.chat_app.domain.account.data.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "account_sessions")
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class AccountSession {
+    @Id
+    @Column(name = "account_id")
+    String accountId;
+
+    @Column(name = "device_id", nullable = false)
+    String deviceId;
+
+    @Column(name = "ip_address")
+    String ipAddress;
+
+    @Column(name = "user_agent")
+    String userAgent;
+
+    @Column(name = "login_at")
+    LocalDateTime loginAt;
+
+    @Column(name = "is_active")
+    boolean isActive;
+}
