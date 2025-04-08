@@ -8,9 +8,9 @@ import io.github.dqh999.chat_app.domain.conversation.data.repository.Conversatio
 import io.github.dqh999.chat_app.domain.conversation.data.repository.ParticipantRepository;
 import io.github.dqh999.chat_app.domain.conversation.service.ConversationService;
 import io.github.dqh999.chat_app.domain.message.data.model.Message;
+import io.github.dqh999.chat_app.infrastructure.model.AppException;
 import io.github.dqh999.chat_app.infrastructure.utils.PageResponse;
-import io.github.dqh999.exception.model.AppException;
-import io.github.dqh999.exception.utils.ResourceException;
+import io.github.dqh999.chat_app.infrastructure.utils.ResourceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 

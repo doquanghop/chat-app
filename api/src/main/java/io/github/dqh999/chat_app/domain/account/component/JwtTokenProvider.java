@@ -7,8 +7,8 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import io.github.dqh999.chat_app.domain.account.data.dto.TokenDTO;
 import io.github.dqh999.chat_app.domain.account.data.dto.TokenMetadataDTO;
-import io.github.dqh999.exception.model.AppException;
-import io.github.dqh999.exception.utils.ResourceException;
+import io.github.dqh999.chat_app.infrastructure.model.AppException;
+import io.github.dqh999.chat_app.infrastructure.utils.ResourceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

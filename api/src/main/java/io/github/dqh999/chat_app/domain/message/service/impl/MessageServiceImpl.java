@@ -5,9 +5,9 @@ import io.github.dqh999.chat_app.domain.message.data.dto.request.SendMessageRequ
 import io.github.dqh999.chat_app.domain.message.data.model.Message;
 import io.github.dqh999.chat_app.domain.message.data.repository.MessageRepository;
 import io.github.dqh999.chat_app.domain.message.service.MessageService;
+import io.github.dqh999.chat_app.infrastructure.model.AppException;
 import io.github.dqh999.chat_app.infrastructure.utils.PageResponse;
-import io.github.dqh999.exception.model.AppException;
-import io.github.dqh999.exception.utils.ResourceException;
+import io.github.dqh999.chat_app.infrastructure.utils.ResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;

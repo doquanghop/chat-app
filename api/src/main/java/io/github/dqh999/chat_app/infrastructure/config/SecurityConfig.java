@@ -4,8 +4,6 @@ import io.github.dqh999.chat_app.infrastructure.service.impl.CustomUserDetailsSe
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,7 +18,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final CustomPermissionEvaluator customPermissionEvaluator;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,15 +40,4 @@ public class SecurityConfig {
         return new CustomUserDetailsServiceImpl();
     }
 
-    @Bean
-    public DefaultMethodSecurityExpressionHandler expressionHandler() {
-        DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
-        handler.setPermissionEvaluator(customPermissionEvaluator);
-        return handler;
-    }
-
-    @Bean
-    public MethodSecurityExpressionHandler methodSecurityExpressionHandler() {
-        return expressionHandler();
-    }
 }

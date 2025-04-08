@@ -1,7 +1,7 @@
 create table accounts
 (
     id            varchar(45) primary key,
-    full_name     varchar(255) not null,
+    full_name     varchar(255),
     avatar_url    text,
     phone_number  varchar(20)  not null unique,
     user_name     varchar(20)  not null unique,

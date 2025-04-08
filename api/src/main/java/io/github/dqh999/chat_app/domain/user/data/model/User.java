@@ -24,8 +24,4 @@ public class User {
     private String fullName;
     @Column(name = "avatar_url")
     private String avatarURL;
-    @Column(name = "is_online")
-    private boolean isOnline;
-    @Column(name = "last_seen")
-    private LocalDateTime lastSeen;
 }

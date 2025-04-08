@@ -9,25 +9,21 @@ import io.github.dqh999.chat_app.domain.account.data.model.Account;
 import io.github.dqh999.chat_app.domain.account.data.repository.AccountRepository;
 import io.github.dqh999.chat_app.domain.account.service.AccountService;
 import io.github.dqh999.chat_app.domain.account.service.AccountSessionService;
-import io.github.dqh999.chat_app.domain.user.data.dto.request.UpdateUserRequest;
-import io.github.dqh999.chat_app.domain.user.service.UserService;
+import io.github.dqh999.chat_app.infrastructure.model.AppException;
 import io.github.dqh999.chat_app.infrastructure.service.CacheService;
-import io.github.dqh999.exception.model.AppException;
-import io.github.dqh999.exception.utils.ResourceException;
+import io.github.dqh999.chat_app.infrastructure.utils.ResourceException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
-    private final UserService userService;
     private final CacheService cacheService;
     private final JwtTokenProvider jwtTokenProvider;
     private final AccountRepository accountRepository;
@@ -37,7 +33,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountResponse register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
         String phoneNumber = request.getPhoneNumber();
         String userName = request.getUserName();
         String phoneLockKey = "phoneNumber:lock:" + phoneNumber;
@@ -50,24 +46,20 @@ public class AccountServiceImpl implements AccountService {
             if (!lockedPhoneNumber || accountRepository.existsByPhoneNumber(phoneNumber)) {
                 throw new AppException(ResourceException.ENTITY_ALREADY_EXISTS, "PHONE_NUMBER");
             }
-            if (!lockedUserName) {
+            if (!lockedUserName || accountRepository.existsByUserName(userName)) {
                 throw new AppException(ResourceException.ENTITY_ALREADY_EXISTS, "USERNAME");
             }
 
             String hashPassword = passwordEncoder.encode(request.getPassword());
             Account newAccount = Account.builder()
+                    .fullName(request.getFullName())
+                    .userName(userName)
                     .phoneNumber(phoneNumber)
                     .hashPassword(hashPassword)
                     .createdAt(LocalDateTime.now())
                     .build();
             accountRepository.save(newAccount);
-
-            userService.update(newAccount.getId(), UpdateUserRequest.builder()
-                    .userName(userName)
-                    .fullName(request.getFullName())
-                    .build());
-            var token = jwtTokenProvider.generateTokens(new TokenMetadataDTO(newAccount.getId(), userName, new Date()));
-            return new AccountResponse(newAccount.getId(), newAccount.getPhoneNumber(), token);
+            return;
         } finally {
             if (lockedPhoneNumber) {
                 cacheService.unlock(phoneLockKey);

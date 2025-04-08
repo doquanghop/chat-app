@@ -1,9 +1,9 @@
-package io.github.dqh999.chat_app.domain.conversation.controller;
+package io.github.dqh999.chat_app.application.api.conversation;
 
 import io.github.dqh999.chat_app.domain.conversation.data.dto.request.CreateConversationRequest;
 import io.github.dqh999.chat_app.domain.conversation.data.model.Conversation;
 import io.github.dqh999.chat_app.domain.conversation.service.GroupConversationService;
-import io.github.dqh999.exception.model.ApiResponse;
+import io.github.dqh999.chat_app.infrastructure.model.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

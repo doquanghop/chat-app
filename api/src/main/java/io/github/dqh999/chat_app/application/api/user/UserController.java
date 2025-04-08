@@ -1,8 +1,8 @@
-package io.github.dqh999.chat_app.domain.user.controller;
+package io.github.dqh999.chat_app.application.api.user;
 
 import io.github.dqh999.chat_app.domain.user.data.model.User;
 import io.github.dqh999.chat_app.domain.user.service.UserService;
-import io.github.dqh999.exception.model.ApiResponse;
+import io.github.dqh999.chat_app.infrastructure.model.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

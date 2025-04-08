@@ -11,6 +11,7 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
     private static final List<String> ALLOWED_ORIGINS = List.of(
+            "http://localhost:3000",
             "http://localhost:8088",
             "http://127.0.0.1:8088"
     );

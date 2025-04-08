@@ -1,6 +1,6 @@
 package io.github.dqh999.chat_app.domain.message.exception;
 
-import io.github.dqh999.exception.model.ExceptionCode;
+import io.github.dqh999.chat_app.infrastructure.model.ExceptionCode;
 import lombok.Getter;
 
 @Getter

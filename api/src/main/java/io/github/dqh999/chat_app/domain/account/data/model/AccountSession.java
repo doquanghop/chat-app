@@ -21,7 +21,7 @@ public class AccountSession {
     @Column(name = "account_id")
     String accountId;
 
-    @Column(name = "device_id", nullable = false)
+    @Column(name = "device_id")
     String deviceId;
 
     @Column(name = "ip_address")

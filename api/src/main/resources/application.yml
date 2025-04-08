@@ -23,10 +23,10 @@ spring:
   openapi:
     service:
       api-docs: Telegram API
-      server: http://localhost:8088,http://api.dqhdev.io.vn
+      server: http://localhost:8080,http://api.dqhdev.io.vn
       title: API Service
       version: 1.0.0
 
 server:
-  port: 8088
+  port: 8080
 

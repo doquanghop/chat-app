@@ -1,7 +1,7 @@
 services:
-  chat_app:
+  chat_app_db:
     image: postgres:15
-    container_name: chat_app
+    container_name: chat_app_db
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: Hop2005@
