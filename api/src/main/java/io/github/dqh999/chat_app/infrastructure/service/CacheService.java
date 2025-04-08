@@ -17,4 +17,9 @@ public interface CacheService {
     boolean lock(String key, Duration timeout);
 
     void unlock(String key);
+
+    void setBlacklist(String key, Duration ttl);
+
+    boolean isBlacklisted(String key);
+
 }

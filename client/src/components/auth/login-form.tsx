@@ -13,8 +13,8 @@ import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 const loginSchema = z.object({
-  phoneNumber: z.string().min(1, "Phone number is required"),
-  password: z.string().min(1, "Password is required"),
+  phoneNumber: z.string().min(1, "Số điện thoại là bắt buộc"),
+  password: z.string().min(1, "Mật khẩu là bắt buộc"),
 })
 
 type LoginFormValues = z.infer<typeof loginSchema>
@@ -38,10 +38,10 @@ export default function LoginForm() {
       await login(data)
       router.push("/dashboard")
     } catch (err: any) {
-      if (err.code === "ENTITY_NOT_FOUND") {
-        setError("Account not found. Please check your phone number.")
-      } else if (err.code === "INVALID_PAYLOAD") {
-        setError("Invalid password. Please try again.")
+      if (err.code === 404) {
+        setError("Tài khoản không tồn tại. Vui lòng kiểm tra lại số điện thoại.")
+      } else if (err.code === 403) {
+        setError("Nhập sai tài khoản hoặc mật khẩu. Vui lòng thử lại.")
       } else {
         setError(err.message || "An unexpected error occurred")
       }
@@ -59,9 +59,9 @@ export default function LoginForm() {
               name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
+                  <FormLabel>Số điện thoại</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your phone number" {...field} />
+                    <Input placeholder="Nhập số điện thoại" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -72,9 +72,9 @@ export default function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Mật khẩu</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="Enter your password" {...field} />
+                    <Input type="password" placeholder="Nhập mật khẩu" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -84,10 +84,10 @@ export default function LoginForm() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Logging in...
+                  Đang đăng nhập...
                 </>
               ) : (
-                "Login"
+                "Đăng nhập"
               )}
             </Button>
           </form>

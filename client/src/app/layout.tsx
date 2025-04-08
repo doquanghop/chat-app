@@ -1,15 +1,20 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/contexts/auth-context"
 
-const inter = Inter({ subsets: ["latin"] })
+import { Roboto } from "next/font/google"
+const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] }) // tuỳ trọng số bạn cần
+
 
 export const metadata: Metadata = {
-  title: "Chat App",
-  description: "A simple chat application",
-    generator: 'v0.dev'
+  title: "Telegram",
+  description: "Telegram Clone",
+  generator: 'telegram.com',
+  icons: {
+    icon: "/favicon.icon",
+  }
+
 }
 
 export default function RootLayout({
@@ -18,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="vi">
+      <body className={roboto.className}>
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

@@ -7,6 +7,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import io.github.dqh999.chat_app.domain.account.data.dto.TokenDTO;
 import io.github.dqh999.chat_app.domain.account.data.dto.TokenMetadataDTO;
+import io.github.dqh999.chat_app.domain.account.exception.AccountException;
 import io.github.dqh999.chat_app.infrastructure.model.AppException;
 import io.github.dqh999.chat_app.infrastructure.utils.ResourceException;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,5 +84,15 @@ public class JwtTokenProvider {
         } catch (ParseException | JOSEException e) {
             throw new AppException(ResourceException.UNEXPECTED_ERROR);
         }
+    }
+
+    public boolean validateToken(String token) {
+        return verifyToken(token).isPresent();
+    }
+
+    public Date getExpirationFromToken(String token) {
+        return verifyToken(token)
+                .map(JWTClaimsSet::getExpirationTime)
+                .orElseThrow(() -> new AppException(AccountException.INVALID_TOKEN));
     }
 }

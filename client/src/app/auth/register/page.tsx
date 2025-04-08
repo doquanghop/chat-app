@@ -3,7 +3,25 @@ import { getSession } from "@/lib/auth"
 import RegisterForm from "@/components/auth/register-form"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Metadata } from "next"
 
+
+export const metadata: Metadata = {
+  title: "Đăng ký tài khoản | Telegram",
+  description: "Tạo tài khoản mới",
+  openGraph: {
+    title: "Đăng ký tài khoản",
+    description: "Tạo tài khoản mới",
+    url: "/auth/register",
+    images: [
+      {
+        url: "/favicon.icon",
+        width: 800,
+        height: 600,
+      },
+    ],
+  },
+}
 export default async function RegisterPage() {
   const session = await getSession()
 

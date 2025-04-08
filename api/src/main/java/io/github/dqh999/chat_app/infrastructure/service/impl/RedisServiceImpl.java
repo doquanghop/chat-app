@@ -55,4 +55,16 @@ public class RedisServiceImpl implements CacheService {
     public void unlock(String key) {
         redisTemplate.delete(key + ":lock");
     }
+
+    @Override
+    public void setBlacklist(String key, Duration ttl) {
+        String blacklistKey = key + ":blacklist";
+        redisTemplate.opsForValue().set(blacklistKey, "true", ttl);
+    }
+
+    @Override
+    public boolean isBlacklisted(String key) {
+        String blacklistKey = key + ":blacklist";
+        return Boolean.TRUE.equals(redisTemplate.hasKey(blacklistKey));
+    }
 }

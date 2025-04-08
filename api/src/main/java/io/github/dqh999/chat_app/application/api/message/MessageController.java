@@ -24,6 +24,7 @@ public class MessageController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ApiResponse<PageResponse<Message>>> getAllMessages(
             @RequestParam String conversationId,
             @RequestParam(defaultValue = "0") int page,
@@ -34,6 +35,7 @@ public class MessageController {
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ApiResponse<PageResponse<Message>>> search(
             @RequestParam String conversationId,
             @RequestParam String keyword,

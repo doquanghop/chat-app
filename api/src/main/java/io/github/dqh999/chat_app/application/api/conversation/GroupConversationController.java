@@ -17,19 +17,22 @@ public class GroupConversationController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ApiResponse<Conversation>> create(@RequestBody CreateConversationRequest request){
+    public ResponseEntity<ApiResponse<Conversation>> create(@RequestBody CreateConversationRequest request) {
         var response = groupConversationService.create(request);
         return ApiResponse.<Conversation>build().withData(response).toEntity();
     }
 
     @PostMapping("/{conversationId}/leave")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ApiResponse<Void>> leaveConversation(@PathVariable String conversationId) {
         groupConversationService.leftConversation(conversationId);
         return ApiResponse.<Void>build()
                 .withMessage("Left conversation successfully")
                 .toEntity();
     }
+
     @PostMapping("/{conversationId}/participants")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ApiResponse<Void>> addParticipant(
             @PathVariable String conversationId,
             @RequestParam String participantId
@@ -39,7 +42,9 @@ public class GroupConversationController {
                 .withMessage("Participant added successfully")
                 .toEntity();
     }
+
     @DeleteMapping("/{conversationId}/participants/{participantId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ApiResponse<Void>> removeParticipant(
             @PathVariable String conversationId,
             @PathVariable String participantId

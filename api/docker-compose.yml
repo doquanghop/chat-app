@@ -1,4 +1,23 @@
 services:
+  chat_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://chat_app_db:5432/chat_app_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Hop2005@
+      - SPRING_REDIS_HOST=chat_app_redis
+      - SPRING_REDIS_PORT=6379
+    depends_on:
+      - chat_app_db
+      - chat_app_redis
+    restart: unless-stopped
+    networks:
+      - chat-network
+
   chat_app_db:
     image: postgres:15
     container_name: chat_app_db

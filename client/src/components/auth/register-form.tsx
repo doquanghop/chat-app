@@ -13,10 +13,10 @@ import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 const registerSchema = z.object({
-  phoneNumber: z.string().min(1, "Phone number is required"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  userName: z.string().min(1, "Username is required"),
-  fullName: z.string().min(1, "Full name is required"),
+  phoneNumber: z.string().min(1, "Số điện thoại là bắt buộc"),
+  password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+  userName: z.string().min(1, "Username là bắt buộc"),
+  fullName: z.string().min(1, "Họ và tên là bắt buộc"),
 })
 
 type RegisterFormValues = z.infer<typeof registerSchema>
@@ -44,11 +44,11 @@ export default function RegisterForm() {
     } catch (err: any) {
       if (err.code === "ENTITY_ALREADY_EXISTS") {
         if (err.field === "PHONE_NUMBER") {
-          setError("This phone number is already registered. Please use a different one.")
+          setError("Số điện thoại này đã được đăng ký. Vui lòng chọn số khác.")
         } else if (err.field === "USERNAME") {
-          setError("This username is already taken. Please choose a different one.")
+          setError("Tên tài khoản này đã được sử dụng. Vui lòng chọn tên khác.")
         } else {
-          setError("An account with these details already exists.")
+          setError("Tài khoản này đã được đăng ký. Vui lòng chọn số khác.")
         }
       } else {
         setError(err.message || "An unexpected error occurred")
@@ -69,7 +69,7 @@ export default function RegisterForm() {
                 <FormItem>
                   <FormLabel>Phone Number</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your phone number" {...field} />
+                    <Input placeholder="Nhập số điện thoại" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -82,7 +82,7 @@ export default function RegisterForm() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Choose a username" {...field} />
+                    <Input placeholder="Nhập username" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -95,7 +95,7 @@ export default function RegisterForm() {
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your full name" {...field} />
+                    <Input placeholder="Nhập họ và tên" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,7 +108,7 @@ export default function RegisterForm() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="Create a password" {...field} />
+                    <Input type="password" placeholder="Nhập mật khẩu" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
