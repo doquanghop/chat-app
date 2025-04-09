@@ -1,4 +1,4 @@
-package io.github.dqh999.chat_app.infrastructure.utils;
+package io.github.dqh999.chat_app.infrastructure.util;
 
 import lombok.*;
 import org.springframework.data.domain.Page;

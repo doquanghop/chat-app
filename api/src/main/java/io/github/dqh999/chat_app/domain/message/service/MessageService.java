@@ -2,7 +2,7 @@ package io.github.dqh999.chat_app.domain.message.service;
 
 import io.github.dqh999.chat_app.domain.message.data.dto.request.SendMessageRequest;
 import io.github.dqh999.chat_app.domain.message.data.model.Message;
-import io.github.dqh999.chat_app.infrastructure.utils.PageResponse;
+import io.github.dqh999.chat_app.infrastructure.util.PageResponse;
 
 public interface MessageService {
     Message send(SendMessageRequest message);

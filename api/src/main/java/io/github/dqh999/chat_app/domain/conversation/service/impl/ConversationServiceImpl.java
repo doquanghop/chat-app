@@ -1,7 +1,7 @@
 package io.github.dqh999.chat_app.domain.conversation.service.impl;
 
 import io.github.dqh999.chat_app.domain.conversation.data.model.Conversation;
-import io.github.dqh999.chat_app.infrastructure.utils.PageResponse;
+import io.github.dqh999.chat_app.infrastructure.util.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;

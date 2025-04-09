@@ -5,7 +5,7 @@ import io.github.dqh999.chat_app.domain.user.data.model.User;
 import io.github.dqh999.chat_app.domain.user.data.repository.UserRepository;
 import io.github.dqh999.chat_app.domain.user.service.UserService;
 import io.github.dqh999.chat_app.infrastructure.model.AppException;
-import io.github.dqh999.chat_app.infrastructure.utils.ResourceException;
+import io.github.dqh999.chat_app.infrastructure.util.ResourceException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

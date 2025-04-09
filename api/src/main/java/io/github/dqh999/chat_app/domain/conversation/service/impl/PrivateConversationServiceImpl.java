@@ -4,7 +4,7 @@ import io.github.dqh999.chat_app.domain.conversation.data.model.Conversation;
 import io.github.dqh999.chat_app.domain.conversation.data.model.ConversationType;
 import io.github.dqh999.chat_app.domain.conversation.data.model.ParticipantRole;
 import io.github.dqh999.chat_app.domain.conversation.service.PrivateConversationService;
-import io.github.dqh999.chat_app.infrastructure.utils.PageResponse;
+import io.github.dqh999.chat_app.infrastructure.util.PageResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -9,7 +9,7 @@ import io.github.dqh999.chat_app.domain.account.data.dto.TokenDTO;
 import io.github.dqh999.chat_app.domain.account.data.dto.TokenMetadataDTO;
 import io.github.dqh999.chat_app.domain.account.exception.AccountException;
 import io.github.dqh999.chat_app.infrastructure.model.AppException;
-import io.github.dqh999.chat_app.infrastructure.utils.ResourceException;
+import io.github.dqh999.chat_app.infrastructure.util.ResourceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

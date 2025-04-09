@@ -15,7 +15,7 @@ import io.github.dqh999.chat_app.domain.account.service.AccountSessionService;
 import io.github.dqh999.chat_app.infrastructure.model.AppException;
 import io.github.dqh999.chat_app.infrastructure.model.UserDetail;
 import io.github.dqh999.chat_app.infrastructure.service.CacheService;
-import io.github.dqh999.chat_app.infrastructure.utils.ResourceException;
+import io.github.dqh999.chat_app.infrastructure.util.ResourceException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
