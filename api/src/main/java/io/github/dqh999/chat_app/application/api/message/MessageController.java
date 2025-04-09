@@ -1,9 +1,10 @@
 package io.github.dqh999.chat_app.application.api.message;
 
 import io.github.dqh999.chat_app.domain.message.data.dto.request.SendMessageRequest;
+import io.github.dqh999.chat_app.domain.message.data.dto.response.MessageResponse;
 import io.github.dqh999.chat_app.domain.message.data.model.Message;
 import io.github.dqh999.chat_app.domain.message.service.MessageService;
-import io.github.dqh999.chat_app.infrastructure.util.PageResponse;
+import io.github.dqh999.chat_app.infrastructure.utils.PageResponse;
 import io.github.dqh999.chat_app.infrastructure.model.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,9 @@ public class MessageController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ApiResponse<Message>> sendMessage(@RequestBody SendMessageRequest request) {
+    public ResponseEntity<ApiResponse<MessageResponse>> sendMessage(@RequestBody SendMessageRequest request) {
         var response = messageService.send(request);
-        return ApiResponse.<Message>build().withData(response).toEntity();
+        return ApiResponse.<MessageResponse>build().withData(response).toEntity();
     }
 
     @GetMapping

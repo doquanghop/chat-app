@@ -1,7 +1,6 @@
 package io.github.dqh999.chat_app.infrastructure.config;
 
 import io.github.dqh999.chat_app.infrastructure.service.ChannelHandler;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
@@ -51,27 +50,36 @@ public class RedisConfig {
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        handlers.forEach(handler ->
-                {
-                    MessageListenerAdapter adapter = new MessageListenerAdapter(handler, "handle") {
-                        @Override
-                        protected void invokeListenerMethod(@NonNull String methodName, Object[] arguments)  {
-                            Object message = arguments[1];
-                            if (!handler.getPayloadType().isInstance(message)) {
-                                log.error("Message type mismatch for handler {}: expected {}, got {}",
-                                        handler.getClass().getSimpleName(), handler.getPayloadType(), message.getClass());
-                                return;
-                            }
-                            super.invokeListenerMethod(methodName, arguments);
+        handlers.forEach(handler -> {
+            MessageListenerAdapter adapter = new MessageListenerAdapter() {
+                @Override
+                public void onMessage(org.springframework.data.redis.connection.Message message, byte[] pattern) {
+                    try {
+                        String channel = new String(message.getChannel());
+                        Class<?> payloadType = handler.getPayloadType();
+                        Object body = new GenericJackson2JsonRedisSerializer().deserialize(message.getBody(), payloadType);
+
+                        if (!payloadType.isInstance(body)) {
+                            log.error("Message type mismatch for handler {}: expected {}, got {}",
+                                    handler.getClass().getSimpleName(), payloadType, body.getClass());
+                            return;
                         }
-                    };
-                    adapter.setSerializer(new GenericJackson2JsonRedisSerializer());
-                    container.addMessageListener(
-                            adapter,
-                            new PatternTopic(handler.getChannelPattern())
-                    );
+
+                        @SuppressWarnings("unchecked")
+                        ChannelHandler<Object> objectHandler = (ChannelHandler<Object>) handler;
+                        objectHandler.handle(channel, body);
+
+                    } catch (Exception e) {
+                        log.error("Error handling Redis message: ", e);
+                    }
                 }
-        );
+            };
+
+            container.addMessageListener(
+                    adapter,
+                    new PatternTopic(handler.getChannelPattern())
+            );
+        });
         return container;
     }
 }

@@ -1,6 +1,6 @@
-package io.github.dqh999.chat_app.infrastructure.util;
+package io.github.dqh999.chat_app.infrastructure.utils;
 
-public class ChannelUtils {
+public class RedisChannelUtils {
     public static final String CONVERSATION_PREFIX = "chat.conversation.";
     public static final String CONVERSATION_PATTERN = CONVERSATION_PREFIX + "*";
 

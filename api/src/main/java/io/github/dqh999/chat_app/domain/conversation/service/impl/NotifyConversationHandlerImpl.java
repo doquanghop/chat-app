@@ -2,7 +2,7 @@ package io.github.dqh999.chat_app.domain.conversation.service.impl;
 
 import io.github.dqh999.chat_app.domain.conversation.data.dto.ConversationEvent;
 import io.github.dqh999.chat_app.infrastructure.service.ChannelHandler;
-import io.github.dqh999.chat_app.infrastructure.util.ChannelUtils;
+import io.github.dqh999.chat_app.infrastructure.utils.RedisChannelUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class NotifyConversationHandlerImpl implements ChannelHandler<ConversationEvent<?>> {
     @Override
     public String getChannelPattern() {
-        return ChannelUtils.CONVERSATION_PATTERN;
+        return RedisChannelUtils.CONVERSATION_PATTERN;
     }
 
     @Override
@@ -22,8 +22,10 @@ public class NotifyConversationHandlerImpl implements ChannelHandler<Conversatio
 
     @Override
     public void handle(String channel, ConversationEvent<?> message) {
-        String conversationId = ChannelUtils.extractConversationId(channel);
-        log.info("Received message on channel {} (conversationId: {}): {}", channel, conversationId, message);
+        String conversationId = RedisChannelUtils.extractConversationId(channel);
+        String requestId = message.getRequestId();
+        ConversationEvent.Type type = message.getType();
+        log.info("Handling event [{}] for conversation [{}], requestId={}", type, conversationId, requestId);
     }
 
 }

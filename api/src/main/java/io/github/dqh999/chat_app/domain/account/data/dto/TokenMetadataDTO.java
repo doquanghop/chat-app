@@ -1,10 +1,11 @@
 package io.github.dqh999.chat_app.domain.account.data.dto;
 
 import java.util.Date;
+import java.util.List;
 
 public record TokenMetadataDTO(
         String userId,
-        String userName,
+        List<String> roles,
         Date issuedAt
 ) {
 }

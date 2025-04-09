@@ -16,12 +16,11 @@ import java.util.List;
 @AllArgsConstructor
 public class UserDetail implements UserDetails {
     String id;
-    String userName;
-    String role;
+    List<String> roles;
 
     @Override
     public String getUsername() {
-        return this.userName;
+        return this.id;
     }
 
     @Override
@@ -31,7 +30,9 @@ public class UserDetail implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .toList();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.github.dqh999.chat_app.infrastructure.config;
 
 import io.github.dqh999.chat_app.application.fliter.JwtAuthenticationFilter;
+import io.github.dqh999.chat_app.application.fliter.RequestIdFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,16 +18,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RequestIdFilter requestIdFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(requestIdFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/v1/account/login", "/api/v1/account/register", "/api/v1/account/refreshToken").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers(
+                                "/api/v1/account/login",
+                                "/api/v1/account/register",
+                                "/api/v1/account/refreshToken",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/ws/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

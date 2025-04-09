@@ -7,13 +7,13 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "account_sessions")
+@Table(name = "login_sessions")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountSession {
+public class LoginSession {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;

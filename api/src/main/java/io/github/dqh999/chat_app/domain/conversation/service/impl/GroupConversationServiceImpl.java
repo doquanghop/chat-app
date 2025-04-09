@@ -5,14 +5,15 @@ import io.github.dqh999.chat_app.domain.conversation.data.model.Conversation;
 import io.github.dqh999.chat_app.domain.conversation.data.model.ConversationType;
 import io.github.dqh999.chat_app.domain.conversation.data.model.ParticipantRole;
 import io.github.dqh999.chat_app.domain.conversation.service.GroupConversationService;
-import io.github.dqh999.chat_app.infrastructure.util.PageResponse;
+import io.github.dqh999.chat_app.infrastructure.constant.QualifierNames;
+import io.github.dqh999.chat_app.infrastructure.utils.PageResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service("GroupConversationService")
+@Service(QualifierNames.GROUP_CONVERSATION_SERVICE)
 public class GroupConversationServiceImpl extends AbstractConversation implements GroupConversationService {
 
     @Override

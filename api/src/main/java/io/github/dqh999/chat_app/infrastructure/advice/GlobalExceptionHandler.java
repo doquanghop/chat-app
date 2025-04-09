@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
         ApiResponse<?> errorResponse = ApiResponse.<Void>build()
                 .withCode(status.value())
                 .withErrors(errors)
-                .withMessage(message != null ? message : e != null ? e.getMessage() : "");
+                .withMessage(message != null ? message : "");
         return ResponseEntity.status(status).body(errorResponse);
     }
 }

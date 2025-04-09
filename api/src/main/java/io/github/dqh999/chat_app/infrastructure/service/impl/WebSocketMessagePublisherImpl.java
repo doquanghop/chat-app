@@ -3,19 +3,16 @@ package io.github.dqh999.chat_app.infrastructure.service.impl;
 import io.github.dqh999.chat_app.infrastructure.constant.QualifierNames;
 import io.github.dqh999.chat_app.infrastructure.service.MessagePublisher;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-@Service(QualifierNames.REDIS_MESSAGE_PUBLISHER)
+@Service(QualifierNames.WEBSOCKET_MESSAGE_PUBLISHER)
 @RequiredArgsConstructor
-@Slf4j
-public class RedisMessagePublisherImpl implements MessagePublisher {
-    private final RedisTemplate<String, Object> redisTemplate;
+public class WebSocketMessagePublisherImpl implements MessagePublisher {
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     public void publish(String channel, Object message) {
-        log.info("Publishing message to channel {}", channel);
-        redisTemplate.convertAndSend(channel, message);
+        messagingTemplate.convertAndSend(channel, message);
     }
 }

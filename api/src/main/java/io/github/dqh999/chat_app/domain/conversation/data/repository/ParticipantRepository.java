@@ -11,4 +11,5 @@ public interface ParticipantRepository extends JpaRepository<Participant, String
     @Query("SELECT p.accountId FROM Participant p WHERE p.conversationId = :conversationId")
     List<String> findAllAccountIdsByConversationId(@Param("conversationId") String conversationId);
 
+    boolean existsByConversationIdAndAccountId(String conversationId, String accountId);
 }

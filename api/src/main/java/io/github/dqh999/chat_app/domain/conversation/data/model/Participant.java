@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Participant {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
     @Column(name = "conversation_id")
     String conversationId;
@@ -22,6 +23,7 @@ public class Participant {
     String accountId;
     @Enumerated(EnumType.STRING)
     ParticipantRole role;
+    String nickname;
     @Column(name = "joined_at")
     LocalDateTime joinedAt;
 }

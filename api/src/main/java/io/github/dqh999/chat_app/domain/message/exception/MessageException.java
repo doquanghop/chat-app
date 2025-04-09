@@ -17,8 +17,4 @@ public enum MessageException implements ExceptionCode {
         return "";
     }
 
-    @Override
-    public String getMessage() {
-        return "";
-    }
 }

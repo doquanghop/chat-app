@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+
 @Entity
-@Table(name = "users")
+@Table(name = "accounts")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,4 +25,8 @@ public class User {
     private String fullName;
     @Column(name = "avatar_url")
     private String avatarURL;
+    @Column(name = "is_online")
+    private Boolean isOnline;
+    @Column(name = "last_seen")
+    private LocalDateTime lastSeen;
 }

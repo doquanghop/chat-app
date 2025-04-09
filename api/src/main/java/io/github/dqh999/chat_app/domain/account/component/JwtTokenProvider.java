@@ -9,12 +9,13 @@ import io.github.dqh999.chat_app.domain.account.data.dto.TokenDTO;
 import io.github.dqh999.chat_app.domain.account.data.dto.TokenMetadataDTO;
 import io.github.dqh999.chat_app.domain.account.exception.AccountException;
 import io.github.dqh999.chat_app.infrastructure.model.AppException;
-import io.github.dqh999.chat_app.infrastructure.util.ResourceException;
+import io.github.dqh999.chat_app.infrastructure.utils.ResourceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,20 +27,20 @@ public class JwtTokenProvider {
     @Value("${spring.security.jwt.expiration}")
     private long expiration;
 
-    private static final String CLAIM_USER_ID = "user_id";
+    private static final String CLAIM_ROLE = "role";
 
     public TokenDTO generateTokens(TokenMetadataDTO tokenMetadata) {
         Date issuedAt = tokenMetadata.issuedAt();
         Date accessValidity = new Date(issuedAt.getTime() + expiration * 1000);
         Date refreshValidity = new Date(issuedAt.getTime() + expiration * 1500);
 
-        String accessToken = generateToken(tokenMetadata.userId(), tokenMetadata.userName(), issuedAt, accessValidity);
+        String accessToken = generateToken(tokenMetadata.userId(), tokenMetadata.roles(), issuedAt, accessValidity);
         String refreshToken = generateToken(tokenMetadata.userId(), null, issuedAt, refreshValidity);
 
         return new TokenDTO(tokenMetadata.userId(), accessToken, accessValidity, refreshToken, refreshValidity);
     }
 
-    private String generateToken(String userId, String userName, Date issuedAt, Date expiration) {
+    private String generateToken(String userId, List<String> roles, Date issuedAt, Date expiration) {
         try {
             var claimsSetBuilder = new JWTClaimsSet.Builder()
                     .subject(userId)
@@ -47,9 +48,8 @@ public class JwtTokenProvider {
                     .issueTime(issuedAt)
                     .expirationTime(expiration)
                     .jwtID(UUID.randomUUID().toString());
-
-            if (userName != null) {
-                claimsSetBuilder.claim(CLAIM_USER_ID, userId);
+            if (roles != null) {
+                claimsSetBuilder.claim(CLAIM_ROLE, roles);
             }
 
             JWSObject jwsObject = new JWSObject(
@@ -94,5 +94,10 @@ public class JwtTokenProvider {
         return verifyToken(token)
                 .map(JWTClaimsSet::getExpirationTime)
                 .orElseThrow(() -> new AppException(AccountException.INVALID_TOKEN));
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> getRolesFromClaims(JWTClaimsSet claims) {
+        return (List<String>) claims.getClaim(CLAIM_ROLE);
     }
 }

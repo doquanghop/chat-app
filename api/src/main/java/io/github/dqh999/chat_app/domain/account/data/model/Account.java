@@ -18,14 +18,19 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+
     @Column(name = "full_name")
     private String fullName;
+
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
+
     @Column(name = "user_name", unique = true)
     private String userName;
+
     @Column(name = "hash_password")
     private String hashPassword;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

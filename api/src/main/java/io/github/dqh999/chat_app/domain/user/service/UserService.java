@@ -8,4 +8,8 @@ public interface UserService {
 
     User getUser(String userName);
 
+    User getUserById(String userId);
+
+    void updateOnlineStatus(String userId, boolean isOnline);
+
 }

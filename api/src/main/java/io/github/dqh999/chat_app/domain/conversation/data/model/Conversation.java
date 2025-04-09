@@ -20,6 +20,8 @@ public class Conversation {
     @Enumerated(EnumType.STRING)
     ConversationType type;
     String name;
+    @Column(name = "avatar_url")
+    String avatarURL;
     @Column(name = "created_at")
     LocalDateTime createdAt;
 

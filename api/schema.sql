@@ -10,15 +10,17 @@ create table accounts
     last_seen     timestamp,
     created_at    timestamp
 );
-create table account_sessions
+create table login_sessions
 (
-    id         varchar(45) primary key,
-    account_id varchar(45) not null,
-    device_id  varchar(255),
-    ip_address varchar(45),
-    user_agent text,
-    login_at   timestamp,
-    is_active  boolean default true,
+    id               varchar(45) primary key,
+    account_id       varchar(45)         not null,
+    device_id        varchar(255),
+    ip_address       varchar(45),
+    user_agent       text,
+    login_at         timestamp,
+    is_online        boolean default false,
+    last_seen        timestamp,
+    is_active        boolean default true,
     foreign key (account_id) references accounts (id)
 );
 create table conversations

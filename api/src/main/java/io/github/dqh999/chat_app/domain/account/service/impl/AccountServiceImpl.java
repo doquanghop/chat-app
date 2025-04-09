@@ -11,13 +11,14 @@ import io.github.dqh999.chat_app.domain.account.data.model.Account;
 import io.github.dqh999.chat_app.domain.account.data.repository.AccountRepository;
 import io.github.dqh999.chat_app.domain.account.exception.AccountException;
 import io.github.dqh999.chat_app.domain.account.service.AccountService;
-import io.github.dqh999.chat_app.domain.account.service.AccountSessionService;
+import io.github.dqh999.chat_app.domain.account.service.LoginSessionTrackerService;
 import io.github.dqh999.chat_app.infrastructure.model.AppException;
 import io.github.dqh999.chat_app.infrastructure.model.UserDetail;
 import io.github.dqh999.chat_app.infrastructure.service.CacheService;
-import io.github.dqh999.chat_app.infrastructure.util.ResourceException;
+import io.github.dqh999.chat_app.infrastructure.utils.ResourceException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,15 +26,18 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AccountServiceImpl implements AccountService {
     private final CacheService cacheService;
     private final JwtTokenProvider jwtTokenProvider;
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AccountSessionService accountSessionService;
+    private final LoginSessionTrackerService loginSessionTrackerService;
     private static final Duration REGISTER_LOCK_TIMEOUT = Duration.ofSeconds(10);
 
     @Override
@@ -81,8 +85,9 @@ public class AccountServiceImpl implements AccountService {
         if (!passwordEncoder.matches(request.getPassword(), existingAccount.getHashPassword())) {
             throw new AppException(AccountException.INVALID_CREDENTIALS);
         }
-        accountSessionService.handleSession(existingAccount.getId());
-        var token = jwtTokenProvider.generateTokens(new TokenMetadataDTO(existingAccount.getId(), "", new Date()));
+        loginSessionTrackerService.handleSession(existingAccount.getId());
+        var token = jwtTokenProvider.generateTokens(new TokenMetadataDTO(existingAccount.getId(), List.of("USER"), new Date()));
+        log.info("User {} logged in successfully", existingAccount.getId());
         return new AccountResponse(existingAccount.getId(), existingAccount.getPhoneNumber(), token);
     }
 
@@ -102,9 +107,8 @@ public class AccountServiceImpl implements AccountService {
         if (optToken.isEmpty() || cacheService.isBlacklisted(accessToken)) {
             throw new AppException(ResourceException.ACCESS_DENIED);
         }
-        var claims = optToken.get().getClaims();
-//        return new UserDetail(claims.);
-        return null;
+        var claims = optToken.get();
+        return new UserDetail(claims.getSubject(), jwtTokenProvider.getRolesFromClaims(claims));
     }
 
     @Override
