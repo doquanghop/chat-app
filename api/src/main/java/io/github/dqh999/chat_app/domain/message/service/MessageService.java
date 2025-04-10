@@ -8,7 +8,7 @@ import io.github.dqh999.chat_app.infrastructure.utils.PageResponse;
 public interface MessageService {
     MessageResponse send(SendMessageRequest message);
 
-    PageResponse<Message> getAllMessages(String conversationId, int page, int size);
+    PageResponse<MessageResponse> getAllMessages(String conversationId, int page, int size);
 
-    PageResponse<Message> search(String conversationId, String keyword, int page, int size);
+    PageResponse<MessageResponse> search(String conversationId, String keyword, int page, int size);
 }

@@ -12,15 +12,15 @@ create table accounts
 );
 create table login_sessions
 (
-    id               varchar(45) primary key,
-    account_id       varchar(45)         not null,
-    device_id        varchar(255),
-    ip_address       varchar(45),
-    user_agent       text,
-    login_at         timestamp,
-    is_online        boolean default false,
-    last_seen        timestamp,
-    is_active        boolean default true,
+    id         varchar(45) primary key,
+    account_id varchar(45) not null,
+    device_id  varchar(255),
+    ip_address varchar(45),
+    user_agent text,
+    login_at   timestamp,
+    is_online  boolean default false,
+    last_seen  timestamp,
+    is_active  boolean default true,
     foreign key (account_id) references accounts (id)
 );
 create table conversations
@@ -42,14 +42,17 @@ create table conversation_roles
 );
 create table participants
 (
-    id              varchar(45) primary key,
-    conversation_id varchar(45) not null,
-    role_id         varchar(20) not null,
-    account_id      varchar(45) not null,
-    joined_at       timestamp,
+    id                   varchar(45) primary key,
+    conversation_id      varchar(45) not null,
+    role_id              varchar(20) not null,
+    account_id           varchar(45) not null,
+    last_seen_message_id varchar(45),
+    nickname             varchar(50),
+    joined_at            timestamp,
     foreign key (conversation_id) references conversations (id),
     foreign key (role_id) references conversation_roles (id),
-    foreign key (account_id) references accounts (id)
+    foreign key (account_id) references accounts (id),
+    foreign key (last_seen_message_id) references messages (id)
 );
 create table messages
 (

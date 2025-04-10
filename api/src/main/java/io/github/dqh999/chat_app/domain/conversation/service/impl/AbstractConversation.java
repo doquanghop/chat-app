@@ -1,5 +1,6 @@
 package io.github.dqh999.chat_app.domain.conversation.service.impl;
 
+import io.github.dqh999.chat_app.domain.conversation.data.dto.response.ConversationResponse;
 import io.github.dqh999.chat_app.domain.conversation.data.model.Conversation;
 import io.github.dqh999.chat_app.domain.conversation.data.model.ConversationType;
 import io.github.dqh999.chat_app.domain.conversation.data.model.Participant;
@@ -7,6 +8,7 @@ import io.github.dqh999.chat_app.domain.conversation.data.model.ParticipantRole;
 import io.github.dqh999.chat_app.domain.conversation.data.repository.ConversationRepository;
 import io.github.dqh999.chat_app.domain.conversation.data.repository.ParticipantRepository;
 import io.github.dqh999.chat_app.domain.conversation.service.ConversationService;
+import io.github.dqh999.chat_app.domain.conversation.service.ParticipantService;
 import io.github.dqh999.chat_app.domain.message.data.model.Message;
 import io.github.dqh999.chat_app.domain.user.service.UserService;
 import io.github.dqh999.chat_app.infrastructure.constant.QualifierNames;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class AbstractConversation implements ConversationService {
@@ -34,18 +37,27 @@ public abstract class AbstractConversation implements ConversationService {
     protected ConversationRepository conversationRepository;
     @Autowired
     protected ParticipantRepository participantRepository;
+    @Autowired
+    protected ParticipantService participantService;
 
 
     @Override
-    public PageResponse<Conversation> getAllConversations(int page, int size) {
+    public PageResponse<ConversationResponse> getAllConversations(int page, int size) {
         String currentAccountId = SecurityUtil.getCurrentUserId();
         log.debug("Fetching all conversations for userId={}, page={}, size={}", currentAccountId, page, size);
         PageRequest pageRequest = PageRequest.of(page, size);
         var conversationPage = conversationRepository.findAllConversation(currentAccountId, pageRequest);
-        conversationPage.getContent().forEach(conversation -> {
-            return;
-        });
-        return PageResponse.build(conversationPage, conversationPage.getContent());
+        var responses = conversationPage.stream().map(conversation -> {
+            var response = ConversationResponse.builder().build();
+            long unreadCount = participantService.getUnreadMessageCount(conversation.getId());
+            response.setUnreadCount(unreadCount);
+            return response;
+        }).collect(Collectors.toList());
+        return PageResponse.<ConversationResponse>builder()
+                .hasNext(conversationPage.hasNext())
+                .hasPrevious(conversationPage.hasPrevious())
+                .data(responses)
+                .build();
     }
 
     @Override

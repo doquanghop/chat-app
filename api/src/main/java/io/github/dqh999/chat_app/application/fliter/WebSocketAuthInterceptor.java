@@ -29,18 +29,17 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
             @NonNull MessageChannel channel
     ) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String token = TokenExtractor.extractToken(accessor.getFirstNativeHeader("Authorization"));
-            if (token == null) {
-                throw new AppException(ResourceException.ACCESS_DENIED);
-            }
-            UserDetail userDetail = accountService.authenticate(token);
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userDetail, null, userDetail.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            accessor.setUser(authentication);
+        String token = TokenExtractor.extractToken(accessor.getFirstNativeHeader("Authorization"));
+        if (token == null) {
+            throw new AppException(ResourceException.ACCESS_DENIED);
         }
+        UserDetail userDetail = accountService.authenticate(token);
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetail, null, userDetail.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        accessor.setUser(authentication);
+
         return message;
     }
 }

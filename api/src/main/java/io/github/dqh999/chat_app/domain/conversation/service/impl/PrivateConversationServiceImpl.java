@@ -1,5 +1,6 @@
 package io.github.dqh999.chat_app.domain.conversation.service.impl;
 
+import io.github.dqh999.chat_app.domain.conversation.data.dto.response.ConversationResponse;
 import io.github.dqh999.chat_app.domain.conversation.data.model.Conversation;
 import io.github.dqh999.chat_app.domain.conversation.data.model.ConversationType;
 import io.github.dqh999.chat_app.domain.conversation.data.model.ParticipantRole;
@@ -40,7 +41,7 @@ public class PrivateConversationServiceImpl extends AbstractConversation impleme
     }
 
     @Override
-    public PageResponse<Conversation> getAllConversations(int page, int size) {
+    public PageResponse<ConversationResponse> getAllConversations(int page, int size) {
         return super.getAllConversations(page, size);
     }
 

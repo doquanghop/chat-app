@@ -1,6 +1,7 @@
 package io.github.dqh999.chat_app.domain.user.service.impl;
 
 import io.github.dqh999.chat_app.domain.user.data.dto.request.UpdateUserRequest;
+import io.github.dqh999.chat_app.domain.user.data.dto.response.UserResponse;
 import io.github.dqh999.chat_app.domain.user.data.model.User;
 import io.github.dqh999.chat_app.domain.user.data.repository.UserRepository;
 import io.github.dqh999.chat_app.domain.user.service.UserService;
@@ -31,9 +32,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(String userId) {
-        return userRepository.findById(userId)
+    public UserResponse getUserById(String userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ResourceException.ENTITY_NOT_FOUND, "User not found"));
+        return new UserResponse();
     }
 
     @Override

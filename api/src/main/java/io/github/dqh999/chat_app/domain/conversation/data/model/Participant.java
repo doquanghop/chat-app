@@ -21,6 +21,8 @@ public class Participant {
     String conversationId;
     @Column(name = "account_id")
     String accountId;
+    @Column(name = "last_seen_message_id")
+    String lastSeenMessageId;
     @Enumerated(EnumType.STRING)
     ParticipantRole role;
     String nickname;

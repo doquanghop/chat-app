@@ -1,7 +1,10 @@
 package io.github.dqh999.chat_app.domain.message.data.dto.response;
 
+import io.github.dqh999.chat_app.domain.user.data.dto.response.UserResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
@@ -10,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 public class MessageResponse {
     String id;
-    String senderId;
+    UserResponse sender;
     String content;
+    LocalDateTime createdAt;
 }

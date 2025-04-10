@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -33,6 +32,7 @@ public class WebSocketEventListener {
 
         log.info("User connected - sessionId: {}, userId: {}, username: {}",
                 sessionId, userInfo.userId, userInfo.username);
+
     }
 
     @EventListener
