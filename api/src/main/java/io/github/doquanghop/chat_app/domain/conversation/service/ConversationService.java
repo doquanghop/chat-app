@@ -12,6 +12,4 @@ public interface ConversationService {
     PageResponse<ConversationResponse> getAllConversations(GetAllConversationRequest request);
 
     void checkParticipantPermission(String conversationId);
-
-    void sendNotification(String conversationId, Message message);
 }

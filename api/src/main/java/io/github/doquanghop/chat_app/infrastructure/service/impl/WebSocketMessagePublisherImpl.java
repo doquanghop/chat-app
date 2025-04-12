@@ -18,11 +18,9 @@ public class WebSocketMessagePublisherImpl<T extends HasRequestId> implements Me
     public void publish(String channel, T message) {
         try {
             messagingTemplate.convertAndSend(channel, message);
-            log.info("Published WebSocket message: channel = [{}], requestId = [{}]",
-                    channel, message.getRequestId());
+            log.info("Published WebSocket message: channel = [{}]", channel);
         } catch (Exception e) {
-            log.error("Failed to publish WebSocket message: channel = [{}], requestId = [{}]",
-                    channel, message.getRequestId(), e);
+            log.error("Failed to publish WebSocket message: channel = [{}]", channel, e);
         }
     }
 }

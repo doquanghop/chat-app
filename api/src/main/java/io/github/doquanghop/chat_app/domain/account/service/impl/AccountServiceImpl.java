@@ -115,4 +115,10 @@ public class AccountServiceImpl implements AccountService {
     public AccountResponse refreshToken(RefreshTokenRequest request) {
         return null;
     }
+
+    @Override
+    public boolean isValidActiveAccount(String accountId) {
+        return accountRepository.findById(accountId)
+                .isPresent();
+    }
 }

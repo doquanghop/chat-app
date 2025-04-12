@@ -20,4 +20,6 @@ public interface ParticipantService {
     List<String> getParticipantIdsByConversationId(String conversationId);
 
     Participant getOtherParticipantInPrivateConversation(String conversationId);
+
+    void removeParticipant(String conversationId, String participantId);
 }

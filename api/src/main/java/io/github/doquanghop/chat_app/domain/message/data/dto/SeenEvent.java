@@ -1,4 +1,4 @@
-package io.github.doquanghop.chat_app.domain.conversation.data.dto;
+package io.github.doquanghop.chat_app.domain.message.data.dto;
 
 import io.github.doquanghop.chat_app.infrastructure.model.HasRequestId;
 import lombok.*;
@@ -9,19 +9,12 @@ import lombok.experimental.FieldDefaults;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConversationEvent<T> implements HasRequestId {
+public class SeenEvent implements HasRequestId {
     String requestId;
-    Type type;
-    T payload;
-
-    public enum Type {
-        MESSAGE,
-        MEMBER_JOIN,
-        MEMBER_REMOVE,
-        MEMBER_LEAVE,
-        MEMBER_UPDATE,
-        CONVERSATION_UPDATE
-    }
+    String conversationId;
+    String userId;
+    String username;
+    String messageId; // ID của tin nhắn được xem
 
     @Override
     public String getRequestId() {

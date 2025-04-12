@@ -11,6 +11,5 @@ public interface UserService {
 
     UserResponse getUserById(String userId);
 
-    void updateOnlineStatus(String userId, boolean isOnline);
 
 }

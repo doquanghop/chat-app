@@ -11,7 +11,7 @@ public class SecurityUtil {
     public static UserDetail getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDetail) {
-            return (UserDetail) authentication.getPrincipal();
+            return ((UserDetail) authentication.getPrincipal());
         }
         throw new AppException(ResourceException.ACCESS_DENIED);
     }

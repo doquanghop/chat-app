@@ -16,16 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service(QualifierNames.PRIVATE_CONVERSATION_SERVICE)
-public class PrivateConversationServiceImpl extends AbstractConversation implements PrivateConversationService {
+public class PrivateConversationServiceImpl extends AbstractConversation
+        implements PrivateConversationService {
     @Override
     public ConversationResponse getConversation(String conversationId) {
         return super.getConversation(conversationId);
     }
 
-    @Override
-    public void sendNotification(String conversationId, Message message) {
-        super.sendNotification(conversationId, message);
-    }
 
     @Override
     @Transactional

@@ -43,17 +43,4 @@ public class UserServiceImpl implements UserService {
                 .isOnline(true)
                 .build();
     }
-
-    @Override
-    public void updateOnlineStatus(String userId, boolean isOnline) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ResourceException.ENTITY_NOT_FOUND, "User not found"));
-
-        user.setIsOnline(isOnline);
-        if (!isOnline) {
-            user.setLastSeen(LocalDateTime.now());
-        }
-
-        userRepository.save(user);
-    }
 }

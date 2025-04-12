@@ -9,8 +9,8 @@ import io.github.doquanghop.chat_app.domain.message.data.dto.request.SendMessage
 import io.github.doquanghop.chat_app.domain.message.data.dto.response.MessageResponse;
 import io.github.doquanghop.chat_app.domain.message.data.model.Message;
 import io.github.doquanghop.chat_app.domain.message.data.repository.MessageRepository;
+import io.github.doquanghop.chat_app.domain.message.mapper.MessageMapper;
 import io.github.doquanghop.chat_app.domain.message.service.MessageService;
-import io.github.doquanghop.chat_app.domain.user.service.UserService;
 import io.github.doquanghop.chat_app.infrastructure.service.MessagePublisher;
 import io.github.doquanghop.chat_app.infrastructure.utils.RedisChannelUtils;
 import io.github.doquanghop.chat_app.infrastructure.model.PageResponse;
@@ -28,21 +28,21 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MessageServiceImpl implements MessageService {
     private final MessagePublisher<ConversationEvent<?>> messagePublisher;
-    private final UserService userService;
     private final ConversationService conversationService;
     private final ParticipantService participantService;
+    private final MessageMapper mapper;
     private final MessageRepository messageRepository;
 
     public MessageServiceImpl(
             @Qualifier("RedisMessagePublisher") MessagePublisher<ConversationEvent<?>> messagePublisher,
-            UserService userService,
             ConversationService conversationService,
             ParticipantService participantService,
+            MessageMapper mapper,
             MessageRepository messageRepository) {
         this.messagePublisher = messagePublisher;
-        this.userService = userService;
         this.conversationService = conversationService;
         this.participantService = participantService;
+        this.mapper = mapper;
         this.messageRepository = messageRepository;
     }
 
@@ -50,7 +50,6 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @Transactional
     public MessageResponse send(String conversationId, SendMessageRequest request) {
-        log.info("Request send message to conversation {}", conversationId);
         String currentAccountId = SecurityUtil.getCurrentUserId();
         conversationService.checkParticipantPermission(conversationId);
         Message newMessage = Message.builder()
@@ -59,17 +58,11 @@ public class MessageServiceImpl implements MessageService {
                 .createdAt(LocalDateTime.now())
                 .build();
         messageRepository.save(newMessage);
-        var sender = userService.getUserById(currentAccountId);
-        var response = MessageResponse.builder()
-                .id(newMessage.getId())
-                .sender(sender)
-                .content(newMessage.getContent())
-                .build();
-        String requestId = RequestIdFilter.getRequestId();
+        var response = mapper.toMessageResponse(newMessage);
         messagePublisher.publish(
                 RedisChannelUtils.buildConversationChannel(conversationId),
                 ConversationEvent.<MessageResponse>builder()
-                        .requestId(requestId)
+                        .requestId(RequestIdFilter.getRequestId())
                         .type(ConversationEvent.Type.MESSAGE)
                         .payload(response)
                         .build()
@@ -81,15 +74,7 @@ public class MessageServiceImpl implements MessageService {
     public PageResponse<MessageResponse> getAllMessages(GetMessageRequest request) {
         PageRequest pageRequest = PageRequest.of(request.getPage() - 1, request.getPageSize());
         var messagePage = messageRepository.findAllByConversationId(request.getConversationId(), pageRequest);
-        var messageResponse = messagePage.getContent().stream().map(message -> {
-            var sender = userService.getUserById(message.getSenderId());
-            return MessageResponse.builder()
-                    .id(message.getId())
-                    .sender(sender)
-                    .content(message.getContent())
-                    .createdAt(message.getCreatedAt())
-                    .build();
-        }).collect(Collectors.toList());
+        var messageResponse = messagePage.getContent().stream().map(mapper::toMessageResponse).collect(Collectors.toList());
         if (request.getPage() == 1 && messagePage.getTotalElements() > 0) {
             participantService.updateLastSeenMessage(request.getConversationId(), messagePage.getContent().getFirst().getId());
         }

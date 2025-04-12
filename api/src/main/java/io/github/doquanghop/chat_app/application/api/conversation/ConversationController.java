@@ -8,7 +8,6 @@ import io.github.doquanghop.chat_app.infrastructure.model.PageResponse;
 import io.github.doquanghop.chat_app.infrastructure.model.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +23,6 @@ public class ConversationController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ApiResponse<PageResponse<ConversationResponse>>> getConversations(
             @RequestParam(required = false) ConversationType type,
             @RequestParam(defaultValue = "0") int page,

@@ -17,4 +17,6 @@ public interface AccountService {
     UserDetail authenticate(String accessToken);
 
     AccountResponse refreshToken(RefreshTokenRequest request);
+
+    boolean isValidActiveAccount(String accountId);
 }

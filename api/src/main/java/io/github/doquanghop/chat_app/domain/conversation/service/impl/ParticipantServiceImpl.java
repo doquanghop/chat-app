@@ -1,5 +1,6 @@
 package io.github.doquanghop.chat_app.domain.conversation.service.impl;
 
+import io.github.doquanghop.chat_app.domain.account.service.AccountService;
 import io.github.doquanghop.chat_app.domain.conversation.data.model.Participant;
 import io.github.doquanghop.chat_app.domain.conversation.data.model.ParticipantRole;
 import io.github.doquanghop.chat_app.domain.conversation.data.repository.ParticipantRepository;
@@ -18,16 +19,23 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ParticipantServiceImpl implements ParticipantService {
+    private final AccountService accountService;
     private final ParticipantRepository participantRepository;
 
     @Override
     public boolean checkParticipantPermission(String conversationId) {
-        return false;
+        return participantRepository.existsByConversationIdAndAccountId(conversationId, SecurityUtil.getCurrentUserId());
     }
 
     @Override
-    public List<Participant> createParticipants(String conversationId, Map<String, ParticipantRole> participants){
+    public List<Participant> createParticipants(String conversationId, Map<String, ParticipantRole> participants) {
         List<Participant> participantList = participants.entrySet().stream()
+                .peek(entry -> {
+                    String accountId = entry.getKey();
+                    if (!accountService.isValidActiveAccount(accountId)) {
+                        throw new AppException(ResourceException.ENTITY_NOT_FOUND);
+                    }
+                })
                 .map(entry -> Participant.builder()
                         .conversationId(conversationId)
                         .accountId(entry.getKey())
@@ -38,6 +46,7 @@ public class ParticipantServiceImpl implements ParticipantService {
 
         return participantRepository.saveAll(participantList);
     }
+
     @Override
     public Participant updateNickName(String targetAccountId, String conversationId, String nickName) {
         return null;
@@ -65,4 +74,18 @@ public class ParticipantServiceImpl implements ParticipantService {
         return participantRepository.findOtherParticipantInPrivateConversation(conversationId, currentAccountId)
                 .orElseThrow(() -> new AppException(ResourceException.ENTITY_NOT_FOUND));
     }
+
+    @Override
+    public void removeParticipant(String conversationId, String participantId) {
+        Participant participant = participantRepository.findByConversationIdAndAccountId(conversationId, participantId)
+                .orElseThrow(() -> new AppException(ResourceException.ENTITY_NOT_FOUND));
+
+        String currentUserId = SecurityUtil.getCurrentUserId();
+        boolean isAdmin = participantRepository.isAdmin(currentUserId, conversationId);
+        if (currentUserId != null && !currentUserId.equals(participantId) && !isAdmin) {
+            throw new AppException(ResourceException.ACCESS_DENIED);
+        }
+        participantRepository.delete(participant);
+    }
+
 }

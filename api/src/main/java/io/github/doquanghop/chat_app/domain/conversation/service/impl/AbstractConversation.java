@@ -1,5 +1,6 @@
 package io.github.doquanghop.chat_app.domain.conversation.service.impl;
 
+import io.github.doquanghop.chat_app.domain.conversation.data.dto.ConversationEvent;
 import io.github.doquanghop.chat_app.domain.conversation.data.dto.request.GetAllConversationRequest;
 import io.github.doquanghop.chat_app.domain.conversation.data.dto.response.ConversationResponse;
 import io.github.doquanghop.chat_app.domain.conversation.data.model.Conversation;
@@ -7,22 +8,20 @@ import io.github.doquanghop.chat_app.domain.conversation.data.model.Conversation
 import io.github.doquanghop.chat_app.domain.conversation.data.model.Participant;
 import io.github.doquanghop.chat_app.domain.conversation.data.model.ParticipantRole;
 import io.github.doquanghop.chat_app.domain.conversation.data.repository.ConversationRepository;
-import io.github.doquanghop.chat_app.domain.conversation.data.repository.ParticipantRepository;
 import io.github.doquanghop.chat_app.domain.conversation.service.ConversationService;
 import io.github.doquanghop.chat_app.domain.conversation.service.ParticipantService;
-import io.github.doquanghop.chat_app.domain.message.data.model.Message;
 import io.github.doquanghop.chat_app.domain.user.service.UserService;
+import io.github.doquanghop.chat_app.infrastructure.constant.QualifierNames;
 import io.github.doquanghop.chat_app.infrastructure.model.AppException;
 import io.github.doquanghop.chat_app.infrastructure.model.PageResponse;
+import io.github.doquanghop.chat_app.infrastructure.service.MessagePublisher;
 import io.github.doquanghop.chat_app.infrastructure.utils.ResourceException;
 import io.github.doquanghop.chat_app.infrastructure.security.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.filters.RequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -73,11 +72,6 @@ public abstract class AbstractConversation implements ConversationService {
             log.warn("User does not have permission to access conversation with ID [{}]", conversationId);
             throw new AppException(ResourceException.ACCESS_DENIED);
         }
-    }
-
-    @Override
-    public void sendNotification(String conversationId, Message message) {
-
     }
 
     protected Conversation createAndSave(ConversationType type, String name, Map<String, ParticipantRole> participants) {

@@ -19,14 +19,11 @@ public class RedisMessagePublisherImpl<T extends HasRequestId> implements Messag
         String payloadClass = message.getClass().getSimpleName();
 
         try {
-            log.info("Publishing Redis message: channel = [{}], requestId = [{}], payloadClass = [{}]",
-                    channel, message.getRequestId(), payloadClass);
+            log.info("Publishing Redis message: channel = [{}], payloadClass = [{}]", channel, payloadClass);
             redisTemplate.convertAndSend(channel, message);
-            log.info("Successfully published Redis message: channel = [{}], requestId = [{}]",
-                    channel, message.getRequestId());
+            log.info("Successfully published Redis message: channel = [{}]", channel);
         } catch (Exception e) {
-            log.error("Failed to publish Redis message: channel = [{}], requestId = [{}], payloadClass = [{}]",
-                    channel, message.getRequestId(), payloadClass, e);
+            log.error("Failed to publish Redis message: channel = [{}], payloadClass = [{}]", channel, payloadClass, e);
         }
     }
 }

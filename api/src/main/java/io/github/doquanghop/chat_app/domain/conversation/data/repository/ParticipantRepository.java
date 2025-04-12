@@ -13,17 +13,19 @@ public interface ParticipantRepository extends JpaRepository<Participant, String
     List<String> findAllAccountIdsByConversationId(@Param("conversationId") String conversationId);
 
     @Query("""
-    SELECT p
-    FROM Participant p
-    WHERE p.conversationId = :conversationId
-    AND p.accountId != :myAccountId
-""")
+                SELECT p
+                FROM Participant p
+                WHERE p.conversationId = :conversationId
+                AND p.accountId != :myAccountId
+            """)
     Optional<Participant> findOtherParticipantInPrivateConversation(
             @Param("conversationId") String conversationId,
             @Param("myAccountId") String myAccountId
     );
 
     boolean existsByConversationIdAndAccountId(String conversationId, String accountId);
+
+    Optional<Participant> findByConversationIdAndAccountId(String conversationId, String accountId);
 
     @Query("""
                 SELECT COUNT(m)
@@ -61,5 +63,19 @@ public interface ParticipantRepository extends JpaRepository<Participant, String
             @Param("accountId") String accountId,
             @Param("conversationId") String conversationId,
             @Param("messageId") String messageId
+    );
+
+    @Query("""
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM Participant p
+                    WHERE p.conversationId = :conversationId
+                    AND p.accountId = :accountId
+                    AND p.role = io.github.doquanghop.chat_app.domain.conversation.data.model.ParticipantRole.ADMIN
+                )
+            """)
+    boolean isAdmin(
+            @Param("accountId") String accountId,
+            @Param("conversationId") String conversationId
     );
 }
