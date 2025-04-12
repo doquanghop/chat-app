@@ -16,3 +16,40 @@ This project is built for learning purposes and demonstrates how modern chat app
 - 🔔 Online/offline user presence
 - 📁 Media/file message support (optional)
 - 🔎 User search and add to conversation
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+Please adhere to the project's coding style (if any).
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT) - see the [`LICENSE`](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgements
+
+*   Inspiration from the Telegram application.
+*   Thanks to all the open-source libraries and frameworks used in this project.
+*   Special thanks to [mention any collaborators or mentors here].
+
+---
+
+## 🐛 Known Issues
+
+*   [List any known bugs, limitations, or areas for improvement.]  Example: "Message delivery status is not always accurate during network interruptions."
+
+---
+
+## ✉️ Contact
+
+If you have any questions or suggestions, feel free to contact me:
+
+*   [dqhdev.q@gmail.com]
+
+---
