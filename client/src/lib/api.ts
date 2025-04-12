@@ -25,7 +25,7 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     console.log("Request config:", config);
-    const userJson = localStorage.getItem("user");
+    const userJson = localStorage.getItem("account");
     if (userJson) {
       try {
         const user = JSON.parse(userJson);
@@ -58,8 +58,6 @@ api.interceptors.response.use(
     return Promise.resolve(apiResponse.data);
   },
   (error) => {
-    console.error("Response errorrrrr:", error.response);
-
     const apiResponse = error.response?.data as ApiResponse<any>;
 
     return Promise.reject(apiResponse);

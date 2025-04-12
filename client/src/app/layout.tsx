@@ -25,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={roboto.className}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )

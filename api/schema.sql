@@ -6,8 +6,6 @@ create table accounts
     phone_number  varchar(20)  not null unique,
     user_name     varchar(20)  not null unique,
     hash_password varchar(255) not null,
-    is_online     boolean default false,
-    last_seen     timestamp,
     created_at    timestamp
 );
 create table login_sessions
@@ -64,13 +62,4 @@ create table messages
     created_at      timestamp,
     foreign key (conversation_id) references conversations (id),
     foreign key (sender_id) references accounts (id)
-);
-create table message_reads
-(
-    message_id varchar(45),
-    reader_id  varchar(45),
-    read_at    timestamp,
-    primary key (message_id, reader_id),
-    foreign key (message_id) references messages (id),
-    foreign key (reader_id) references accounts (id)
 );
