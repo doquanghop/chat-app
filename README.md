@@ -3,8 +3,12 @@
 A full-stack real-time chat application inspired by Telegram.  
 This project is built for learning purposes and demonstrates how modern chat apps work, including messaging, group chats, and user presence.
 
----
+[![GitHub stars](https://img.shields.io/github/stars/username/repo-name?style=social)](https://github.com/username/repo-name)
+[![GitHub forks](https://img.shields.io/github/forks/username/repo-name?style=social)](https://github.com/username/repo-name/forks)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Downloads](https://img.shields.io/github/downloads/username/repo-name/total.svg)](https://github.com/username/repo-name/releases)
 
+---
 ## 🚀 Features
 
 - 🔒 Authentication (Register & Login)
