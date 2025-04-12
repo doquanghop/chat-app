@@ -6,7 +6,7 @@ This project is built for learning purposes and demonstrates how modern chat app
 [![GitHub stars](https://img.shields.io/github/stars/doquanghop/telegram-clone?style=social)](https://github.com/doquanghop/telegram-clone)
 [![GitHub forks](https://img.shields.io/github/forks/doquanghop/telegram-clone?style=social)](https://github.com/doquanghop/telegram-clone/forks)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Downloads](https://img.shields.io/github/downloads/username/repo-name/total.svg)](https://github.com/doquanghop/telegram-clone/releases)
+[![Downloads](https://img.shields.io/github/downloads/doquanghop/telegram-clone/total.svg)](https://github.com/doquanghop/telegram-clone/releases)
 
 ---
 ## 🚀 Features
