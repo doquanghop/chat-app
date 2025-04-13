@@ -17,7 +17,8 @@ public enum ResourceException implements ExceptionCode {
     DELETE_FAILED(5002, "DELETE_FAILED"),
     ACCESS_DENIED(4003, "ACCESS_DENIED"),
     INVALID_PAYLOAD(4001, "INVALID_PAYLOAD"),
-    UNEXPECTED_ERROR(5999, "UNEXPECTED_ERROR");
+    UNEXPECTED_ERROR(5999, "UNEXPECTED_ERROR"),
+    INTERNAL_SERVER_ERROR(5000, "INTERNAL_SERVER_ERROR"),;
 
     private final Integer code;
     private final String type;

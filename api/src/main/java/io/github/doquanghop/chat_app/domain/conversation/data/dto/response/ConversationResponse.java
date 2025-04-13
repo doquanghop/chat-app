@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
@@ -15,4 +17,6 @@ public class ConversationResponse {
     String avatarURL;
     ConversationType type;
     long unreadCount;
+    boolean isOnline = true;
+    LocalDateTime lastSeen = LocalDateTime.now();
 }

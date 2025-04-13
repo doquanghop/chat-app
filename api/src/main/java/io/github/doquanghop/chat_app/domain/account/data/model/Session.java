@@ -7,13 +7,13 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "login_sessions")
+@Table(name = "sessions")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginSession {
+public class Session {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
@@ -33,7 +33,9 @@ public class LoginSession {
     @Column(name = "login_at")
     LocalDateTime loginAt;
 
-    @Column(name = "is_active")
-    boolean isActive;
+    @Column(name = "is_online")
+    Boolean isOnline;
 
+    @Column(name = "last_seen")
+    LocalDateTime lastSeen;
 }

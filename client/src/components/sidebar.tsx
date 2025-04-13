@@ -13,7 +13,7 @@ export default function Sidebar() {
         const fetchConversations = async () => {
             try {
                 const response = await api.get<PageResponse<ConversationResponse>
-                >("/api/v1/conversation", {
+                >("/api/v1/conversation/all", {
                     params: { page: 0, pageSize: 20 },
                 });
                 console.log("Conversations:", response);

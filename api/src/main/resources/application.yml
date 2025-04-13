@@ -24,6 +24,7 @@ spring:
     service:
       api-docs: Telegram API
       server: http://localhost:8080,http://api.dqhdev.io.vn
+      package: io.github.doquanghop.chat_app
       title: API Service
       version: 1.0.0
 

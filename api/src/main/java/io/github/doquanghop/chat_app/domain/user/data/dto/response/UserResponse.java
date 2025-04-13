@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Data
 @Builder
@@ -17,4 +19,5 @@ public class UserResponse {
     String fullName;
     String avatarURL;
     boolean isOnline;
+    LocalDateTime lastSeen;
 }

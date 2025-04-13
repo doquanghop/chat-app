@@ -8,17 +8,17 @@ create table accounts
     hash_password varchar(255) not null,
     created_at    timestamp
 );
-create table login_sessions
+create table sessions
 (
-    id         varchar(45) primary key,
-    account_id varchar(45) not null,
-    device_id  varchar(255),
-    ip_address varchar(45),
-    user_agent text,
-    login_at   timestamp,
-    is_online  boolean default false,
-    last_seen  timestamp,
-    is_active  boolean default true,
+    id            varchar(45) primary key,
+    account_id    varchar(45) not null,
+    ws_session_id varchar(255),
+    device_id     varchar(255),
+    ip_address    varchar(45),
+    user_agent    text,
+    login_at      timestamp,
+    is_online     boolean default false,
+    last_seen     timestamp,
     foreign key (account_id) references accounts (id)
 );
 create table conversations

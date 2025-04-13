@@ -17,11 +17,14 @@ import java.util.stream.Collectors;
 @Configuration
 public class SwaggerConfig {
     @Bean
-    public GroupedOpenApi publicApi(@Value("${spring.openapi.service.api-docs}") String apiDocs) {
+    public GroupedOpenApi publicApi(
+            @Value("${spring.openapi.service.api-docs}") String apiDocs,
+            @Value("${spring.openapi.service.package}") String packageName
+    ) {
         return GroupedOpenApi.builder()
                 .group(apiDocs)
                 .pathsToMatch("/**")
-                .packagesToScan("io.github.doquanghop")
+                .packagesToScan(packageName)
                 .build();
     }
 
@@ -29,7 +32,8 @@ public class SwaggerConfig {
     public OpenAPI openAPI(
             @Value("${spring.openapi.service.title}") String title,
             @Value("${spring.openapi.service.version}") String version,
-            @Value("${spring.openapi.service.server}") List<String> serverUrls) {
+            @Value("${spring.openapi.service.server}") List<String> serverUrls
+    ) {
         List<Server> servers = serverUrls.stream()
                 .map(url -> new Server().url(url))
                 .collect(Collectors.toList());

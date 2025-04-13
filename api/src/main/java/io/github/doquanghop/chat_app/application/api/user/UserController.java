@@ -1,6 +1,6 @@
 package io.github.doquanghop.chat_app.application.api.user;
 
-import io.github.doquanghop.chat_app.domain.user.data.model.User;
+import io.github.doquanghop.chat_app.domain.user.data.dto.response.UserResponse;
 import io.github.doquanghop.chat_app.domain.user.service.UserService;
 import io.github.doquanghop.chat_app.infrastructure.model.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +17,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userName}")
-    public ResponseEntity<ApiResponse<User>> getUserByUserName(@PathVariable String userName) {
+    public ResponseEntity<ApiResponse<UserResponse>> getUserByUserName(@PathVariable String userName) {
         var response = userService.getUser(userName);
-        return ApiResponse.<User>build().withData(response).toEntity();
+        return ApiResponse.<UserResponse>build().withData(response).toEntity();
     }
 }

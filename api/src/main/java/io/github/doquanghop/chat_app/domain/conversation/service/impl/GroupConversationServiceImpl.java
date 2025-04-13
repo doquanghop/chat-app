@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @Service(QualifierNames.GROUP_CONVERSATION_SERVICE)
 public class GroupConversationServiceImpl extends AbstractConversation
         implements GroupConversationService {
+
     private final MessagePublisher<ConversationEvent<?>> evenPublisher;
 
     public GroupConversationServiceImpl(@Qualifier(QualifierNames.REDIS_MESSAGE_PUBLISHER) MessagePublisher<ConversationEvent<?>> evenPublisher) {

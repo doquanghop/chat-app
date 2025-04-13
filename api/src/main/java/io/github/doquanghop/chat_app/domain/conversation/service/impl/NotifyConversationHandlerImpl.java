@@ -37,7 +37,6 @@ public class NotifyConversationHandlerImpl extends BaseChannelHandler<Conversati
         if (participantIds.isEmpty()) {
             log.warn("No participants found for conversationId={}, skipping event processing", conversationId);
         }
-        ;
         log.info("Notifying [{}] participants for conversation [{}]", participantIds.size(), conversationId);
         for (String participantId : participantIds) {
             try {

@@ -24,5 +24,4 @@ public class Conversation {
     String avatarURL;
     @Column(name = "created_at")
     LocalDateTime createdAt;
-
 }

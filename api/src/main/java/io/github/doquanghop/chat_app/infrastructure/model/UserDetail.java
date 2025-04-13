@@ -17,6 +17,7 @@ import java.util.List;
 public class UserDetail implements UserDetails {
     String id;
     List<String> roles;
+    String sessionId;
 
     @Override
     public String getUsername() {

@@ -18,7 +18,7 @@ public enum AccountException implements ExceptionCode {
     INVALID_TOKEN(4006, "INVALID_TOKEN"),
     TOKEN_BLACKLISTED(4007, "TOKEN_BLACKLISTED"),
     REFRESH_TOKEN_NOT_FOUND(4008, "REFRESH_TOKEN_NOT_FOUND"),
-    TOKEN_TYPE_MISMATCH(4009, "TOKEN_TYPE_MISMATCH");
+    EXPIRED_TOKEN(4001, "EXPIRED_TOKEN");
 
     private final Integer code;
     private final String type;

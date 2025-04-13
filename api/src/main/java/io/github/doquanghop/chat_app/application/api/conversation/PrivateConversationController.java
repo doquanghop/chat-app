@@ -1,6 +1,6 @@
 package io.github.doquanghop.chat_app.application.api.conversation;
 
-import io.github.doquanghop.chat_app.domain.conversation.data.model.Conversation;
+import io.github.doquanghop.chat_app.domain.conversation.data.dto.response.ConversationResponse;
 import io.github.doquanghop.chat_app.domain.conversation.service.PrivateConversationService;
 import io.github.doquanghop.chat_app.infrastructure.model.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.*;
 public class PrivateConversationController {
     private final PrivateConversationService privateConversationService;
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user/{counterpartId}")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<ApiResponse<Conversation>> getPrivateConversationByUserId(@PathVariable String userId) {
-        var response = privateConversationService.getPrivateConversationWith(userId);
-        return ApiResponse.<Conversation>build().withData(response).toEntity();
+    public ResponseEntity<ApiResponse<ConversationResponse>> getPrivateConversationByUserId(@PathVariable String counterpartId) {
+        var response = privateConversationService.getPrivateConversationWith(counterpartId);
+        return ApiResponse.<ConversationResponse>build().withData(response).toEntity();
     }
 }

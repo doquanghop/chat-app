@@ -1,5 +1,6 @@
 package io.github.doquanghop.chat_app.domain.account.service.impl;
 
+import com.nimbusds.jwt.JWTClaimsSet;
 import io.github.doquanghop.chat_app.domain.account.component.JwtTokenProvider;
 import io.github.doquanghop.chat_app.domain.account.data.dto.TokenMetadataDTO;
 import io.github.doquanghop.chat_app.domain.account.data.dto.request.LoginRequest;
@@ -11,7 +12,7 @@ import io.github.doquanghop.chat_app.domain.account.data.model.Account;
 import io.github.doquanghop.chat_app.domain.account.data.repository.AccountRepository;
 import io.github.doquanghop.chat_app.domain.account.exception.AccountException;
 import io.github.doquanghop.chat_app.domain.account.service.AccountService;
-import io.github.doquanghop.chat_app.domain.account.service.LoginSessionTrackerService;
+import io.github.doquanghop.chat_app.domain.account.service.SessionService;
 import io.github.doquanghop.chat_app.infrastructure.model.AppException;
 import io.github.doquanghop.chat_app.infrastructure.model.UserDetail;
 import io.github.doquanghop.chat_app.infrastructure.service.CacheService;
@@ -37,7 +38,7 @@ public class AccountServiceImpl implements AccountService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-    private final LoginSessionTrackerService loginSessionTrackerService;
+    private final SessionService sessionService;
     private static final Duration REGISTER_LOCK_TIMEOUT = Duration.ofSeconds(10);
 
     @Override
@@ -85,14 +86,14 @@ public class AccountServiceImpl implements AccountService {
         if (!passwordEncoder.matches(request.getPassword(), existingAccount.getHashPassword())) {
             throw new AppException(AccountException.INVALID_CREDENTIALS);
         }
-        loginSessionTrackerService.handleSession(existingAccount.getId());
-        var token = jwtTokenProvider.generateTokens(new TokenMetadataDTO(existingAccount.getId(), List.of("USER"), new Date()));
+        String sessionId = sessionService.createSession(existingAccount.getId());
+        var token = jwtTokenProvider.generateTokens(new TokenMetadataDTO(existingAccount.getId(), List.of("USER"), sessionId, new Date()));
         log.info("User {} logged in successfully", existingAccount.getId());
         return new AccountResponse(existingAccount.getId(), existingAccount.getPhoneNumber(), token);
     }
 
     @Override
-    public void logout(LogoutRequest request) {
+    public void logout(LogoutRequest request) throws AppException {
         if (!jwtTokenProvider.validateToken(request.getAccessToken())) {
             throw new AppException(ResourceException.ACCESS_DENIED);
         }
@@ -102,18 +103,32 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public UserDetail authenticate(String accessToken) {
-        var optToken = jwtTokenProvider.verifyToken(accessToken);
-        if (optToken.isEmpty() || cacheService.isBlacklisted(accessToken)) {
+    public UserDetail authenticate(String accessToken) throws AppException {
+        var claims = jwtTokenProvider.verifyToken(accessToken);
+        if (cacheService.isBlacklisted(accessToken)) {
             throw new AppException(ResourceException.ACCESS_DENIED);
         }
-        var claims = optToken.get();
-        return new UserDetail(claims.getSubject(), jwtTokenProvider.getRolesFromClaims(claims));
+        return new UserDetail(claims.getSubject(), jwtTokenProvider.getRolesFromClaims(claims), jwtTokenProvider.getSessionIdFromClaims(claims));
     }
 
     @Override
     public AccountResponse refreshToken(RefreshTokenRequest request) {
-        return null;
+        if (cacheService.isBlacklisted(request.getAccessToken())) {
+            throw new AppException(AccountException.TOKEN_BLACKLISTED);
+        }
+        JWTClaimsSet claims = jwtTokenProvider.verifyToken(request.getRefreshToken());
+        String userId = claims.getSubject();
+        Date accessTokenExpiration = jwtTokenProvider.getExpirationFromToken(request.getAccessToken());
+        if (accessTokenExpiration != null && accessTokenExpiration.after(new Date())) {
+            Duration ttl = Duration.between(Instant.now(), accessTokenExpiration.toInstant());
+            cacheService.setBlacklist(request.getAccessToken(), ttl);
+            log.info("Blacklisted old access token for userId={}", userId);
+        }
+        Account existingAccount = accountRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ResourceException.ENTITY_NOT_FOUND, "Account not found"));
+        String sessionId = sessionService.getSessionId(existingAccount.getId());
+        var newTokens = jwtTokenProvider.generateTokens(new TokenMetadataDTO(existingAccount.getId(), List.of("USER"), sessionId, new Date()));
+        return new AccountResponse(userId, existingAccount.getPhoneNumber(), newTokens);
     }
 
     @Override

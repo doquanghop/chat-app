@@ -42,7 +42,7 @@ public class AccountController {
     }
 
     @PostMapping(value = "/refreshToken")
-    public ResponseEntity<ApiResponse<AccountResponse>> login(@RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<ApiResponse<AccountResponse>> refreshToken(@RequestBody RefreshTokenRequest request) {
         var response = accountService.refreshToken(request);
         return ApiResponse.<AccountResponse>build().withData(response).toEntity();
     }

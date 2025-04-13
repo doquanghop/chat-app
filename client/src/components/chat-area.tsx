@@ -30,7 +30,7 @@ export default function ChatArea({ conversationId }: ChatAreaProps) {
                 >(`/api/v1/message`, {
                     params: { conversationId, page: 0, size: 50 },
                 });
-                setMessages(response.content.reverse());
+                setMessages(response.data);
             } catch (error) {
                 console.error("Failed to fetch messages:", error);
             } finally {

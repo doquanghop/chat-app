@@ -1,6 +1,6 @@
 package io.github.doquanghop.chat_app.domain.conversation.service.impl;
 
-import io.github.doquanghop.chat_app.domain.conversation.data.dto.ConversationEvent;
+import io.github.doquanghop.chat_app.domain.account.service.SessionService;
 import io.github.doquanghop.chat_app.domain.conversation.data.dto.request.GetAllConversationRequest;
 import io.github.doquanghop.chat_app.domain.conversation.data.dto.response.ConversationResponse;
 import io.github.doquanghop.chat_app.domain.conversation.data.model.Conversation;
@@ -11,15 +11,12 @@ import io.github.doquanghop.chat_app.domain.conversation.data.repository.Convers
 import io.github.doquanghop.chat_app.domain.conversation.service.ConversationService;
 import io.github.doquanghop.chat_app.domain.conversation.service.ParticipantService;
 import io.github.doquanghop.chat_app.domain.user.service.UserService;
-import io.github.doquanghop.chat_app.infrastructure.constant.QualifierNames;
 import io.github.doquanghop.chat_app.infrastructure.model.AppException;
 import io.github.doquanghop.chat_app.infrastructure.model.PageResponse;
-import io.github.doquanghop.chat_app.infrastructure.service.MessagePublisher;
 import io.github.doquanghop.chat_app.infrastructure.utils.ResourceException;
 import io.github.doquanghop.chat_app.infrastructure.security.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.Map;
@@ -29,11 +26,15 @@ import java.util.stream.Collectors;
 public abstract class AbstractConversation implements ConversationService {
     @Autowired
     protected UserService userService;
-    @Autowired
-    protected ConversationRepository conversationRepository;
 
     @Autowired
     protected ParticipantService participantService;
+
+    @Autowired
+    private SessionService sessionService;
+
+    @Autowired
+    protected ConversationRepository conversationRepository;
 
     @Override
     public ConversationResponse getConversation(String conversationId) {
@@ -46,7 +47,6 @@ public abstract class AbstractConversation implements ConversationService {
     @Override
     public PageResponse<ConversationResponse> getAllConversations(GetAllConversationRequest request) {
         String currentAccountId = SecurityUtil.getCurrentUserId();
-        log.info("Fetching all conversations for userId={}, page=[{}], size={}", currentAccountId, request.getPage(), request.getPageSize());
         PageRequest pageRequest = PageRequest.of(request.getPage(), request.getPageSize());
         var conversationPage = conversationRepository.findAllConversation(request.getType(), currentAccountId, pageRequest);
         var responses = conversationPage.stream().map(conversation -> {
@@ -65,11 +65,9 @@ public abstract class AbstractConversation implements ConversationService {
     @Override
     public void checkParticipantPermission(String conversationId) {
         if (!conversationRepository.existsById(conversationId)) {
-            log.warn("Conversation with ID [{}] not found", conversationId);
             throw new AppException(ResourceException.ENTITY_NOT_FOUND);
         }
         if (participantService.checkParticipantPermission(conversationId)) {
-            log.warn("User does not have permission to access conversation with ID [{}]", conversationId);
             throw new AppException(ResourceException.ACCESS_DENIED);
         }
     }
@@ -84,18 +82,27 @@ public abstract class AbstractConversation implements ConversationService {
         return conversation;
     }
 
-    private ConversationResponse buildConversationResponse(Conversation conversation) {
-        ConversationResponse response = ConversationResponse.builder()
+    protected ConversationResponse buildConversationResponse(Conversation conversation) {
+        ConversationResponse.ConversationResponseBuilder builder = ConversationResponse.builder()
                 .id(conversation.getId())
                 .type(conversation.getType())
-                .build();
+                .name(conversation.getName())
+                .avatarURL(conversation.getAvatarURL());
         if (conversation.getType() == ConversationType.PRIVATE) {
-            Participant otherParticipant = participantService.getOtherParticipantInPrivateConversation(conversation.getId());
-            response.setName(otherParticipant.getNickname());
-        } else {
-            response.setName(conversation.getName());
-            response.setAvatarURL(conversation.getAvatarURL());
+            configurePrivateConversationResponse(builder, conversation);
         }
-        return response;
+        return builder.build();
+    }
+
+    private void configurePrivateConversationResponse(ConversationResponse.ConversationResponseBuilder builder,
+                                                      Conversation conversation) {
+        Participant counterpart = participantService.getOtherParticipantInPrivateConversation(conversation.getId());
+        var counterpartUser = userService.getUserById(counterpart.getAccountId());
+        var counterPartStatus = sessionService.getSessionStatus(counterpart.getAccountId());
+
+        builder.name(counterpart.getNickname() != null ? counterpart.getNickname() : counterpartUser.getFullName())
+                .avatarURL(counterpartUser.getAvatarURL())
+                .isOnline(counterPartStatus.isOnline())
+                .lastSeen(counterPartStatus.lastSeen());
     }
 }

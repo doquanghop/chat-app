@@ -1,5 +1,6 @@
 package io.github.doquanghop.chat_app.domain.user.service.impl;
 
+import io.github.doquanghop.chat_app.domain.account.service.SessionService;
 import io.github.doquanghop.chat_app.domain.user.data.dto.request.UpdateUserRequest;
 import io.github.doquanghop.chat_app.domain.user.data.dto.response.UserResponse;
 import io.github.doquanghop.chat_app.domain.user.data.model.User;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private final SessionService sessionService;
     private final UserRepository userRepository;
 
     @Override
@@ -26,21 +28,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUser(String userName) {
-        return userRepository.findByUserName(userName)
+    public UserResponse getUser(String userName) {
+        User existingUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ResourceException.ENTITY_NOT_FOUND, "User not found"));
-    }
-
-    @Override
-    public UserResponse getUserById(String userId) {
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ResourceException.ENTITY_NOT_FOUND, "User not found"));
+        var sessionStatus = sessionService.getSessionStatus(existingUser.getId());
         return UserResponse.builder()
                 .id(existingUser.getId())
                 .userName(existingUser.getUserName())
                 .fullName(existingUser.getFullName())
                 .avatarURL(existingUser.getAvatarURL())
-                .isOnline(true)
+                .isOnline(sessionStatus.isOnline())
+                .lastSeen(LocalDateTime.now())
                 .build();
+    }
+
+    @Override
+    public User getUserById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ResourceException.ENTITY_NOT_FOUND, "User not found"));
     }
 }

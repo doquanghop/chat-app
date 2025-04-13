@@ -1,60 +1,82 @@
 package io.github.doquanghop.chat_app.application.component;
 
-import io.github.doquanghop.chat_app.infrastructure.model.UserDetail;
+import io.github.doquanghop.chat_app.domain.account.service.SessionService;
+import io.github.doquanghop.chat_app.infrastructure.constant.SecurityConstants;
+import io.github.doquanghop.chat_app.infrastructure.model.AppException;
+import io.github.doquanghop.chat_app.infrastructure.utils.ResourceException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.util.Map;
+
+
 @Component
-@Log4j2
+@Slf4j
 @RequiredArgsConstructor
 public class WebSocketEventListener {
 
+    private final SessionService sessionService;
+
+    /**
+     * Handles WebSocket connection events by connecting the application session.
+     *
+     * @param event The WebSocket connection event.
+     * @throws AppException If the application session ID is missing or connection fails.
+     */
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headerAccessor.getSessionId();
-        UserInfo userInfo = extractUserInfo(headerAccessor);
-        log.info("User connected - sessionId: {}, userId: {}, username: {}",
-                sessionId, userInfo.userId, userInfo.username);
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+        String wsSessionId = accessor.getSessionId();
 
+        log.debug("Processing WebSocket connection for wsSessionId: {}", wsSessionId);
+
+        try {
+            String appSessionId = getAppSessionId(accessor);
+            sessionService.connectSession(appSessionId);
+            log.info("Connected WebSocket - wsSessionId: {}, appSessionId: {}", wsSessionId, appSessionId);
+        } catch (AppException e) {
+            log.error("Failed to connect WebSocket - wsSessionId: {}. Error: {}", wsSessionId, e.getMessage());
+            throw e;
+        }
     }
 
+    /**
+     * Handles WebSocket disconnection events by disconnecting the session.
+     *
+     * @param event The WebSocket disconnection event.
+     */
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headerAccessor.getSessionId();
-
-        String userId = "anonymous";
-        String username = "anonymous";
-
-
-        log.info("User disconnected - sessionId: {}, userId: {}, username: {}",
-                sessionId, userId, username);
-    }
-
-    private UserInfo extractUserInfo(StompHeaderAccessor headerAccessor) {
-        String userId = "anonymous";
-        String username = "anonymous";
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof UserDetail userDetail) {
-            userId = userDetail.getId();
-            username = userDetail.getUsername();
-            log.info("Extracted from SecurityContext - userId: {}, username: {}", userId, username);
-        } else {
-            log.warn("No authenticated user found in SecurityContext");
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+        String wsSessionId = accessor.getSessionId();
+        log.info("Processing WebSocket disconnection for wsSessionId: {}", wsSessionId);
+        try {
+            String appSessionId = getAppSessionId(accessor);
+            sessionService.disconnectSession(appSessionId);
+            log.info("Disconnected WebSocket - wsSessionId: {}, appSessionId: {}", wsSessionId, appSessionId);
+        } catch (AppException e) {
+            log.error("Failed to disconnect WebSocket - wsSessionId: {}. Error: {}", wsSessionId, e.getMessage());
+            throw e;
         }
-
-        return new UserInfo(userId, username);
     }
 
-    private record UserInfo(String userId, String username) {
+
+    private String getAppSessionId(StompHeaderAccessor accessor) throws NullPointerException {
+        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+        if (sessionAttributes == null) {
+            log.warn("Missing session attributes for wsSessionId: {}", accessor.getSessionId());
+            throw new AppException(ResourceException.ACCESS_DENIED, "Missing session attributes");
+        }
+        String appSessionId = sessionAttributes.get(SecurityConstants.APP_SESSION_ID_KEY).toString();
+        if (appSessionId == null) {
+            log.warn("Missing appSessionId for wsSessionId: {}", accessor.getSessionId());
+            throw new AppException(ResourceException.ACCESS_DENIED, "Missing session ID");
+        }
+        return appSessionId;
     }
 }

@@ -36,6 +36,7 @@ api.interceptors.request.use(
         console.error("Failed to parse user from localStorage:", error);
       }
     }
+    console.log("Request headers:", config);
     return config;
   },
   (error) => Promise.reject(error)

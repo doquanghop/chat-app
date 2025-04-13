@@ -28,26 +28,28 @@ public class JwtTokenProvider {
     private long expiration;
 
     private static final String CLAIM_ROLE = "role";
+    private static final String CLAIM_SESSION_ID = "sessionId";
 
     public TokenDTO generateTokens(TokenMetadataDTO tokenMetadata) {
         Date issuedAt = tokenMetadata.issuedAt();
         Date accessValidity = new Date(issuedAt.getTime() + expiration * 1000);
         Date refreshValidity = new Date(issuedAt.getTime() + expiration * 1500);
 
-        String accessToken = generateToken(tokenMetadata.userId(), tokenMetadata.roles(), issuedAt, accessValidity);
-        String refreshToken = generateToken(tokenMetadata.userId(), null, issuedAt, refreshValidity);
+        String accessToken = generateToken(tokenMetadata.userId(), tokenMetadata.roles(), tokenMetadata.sessionId(), issuedAt, accessValidity);
+        String refreshToken = generateToken(tokenMetadata.userId(), null, null, issuedAt, refreshValidity);
 
         return new TokenDTO(tokenMetadata.userId(), accessToken, accessValidity, refreshToken, refreshValidity);
     }
 
-    private String generateToken(String userId, List<String> roles, Date issuedAt, Date expiration) {
+    private String generateToken(String userId, List<String> roles, String sessionId, Date issuedAt, Date expiration) {
         try {
             var claimsSetBuilder = new JWTClaimsSet.Builder()
                     .subject(userId)
                     .issuer("auth-service")
                     .issueTime(issuedAt)
                     .expirationTime(expiration)
-                    .jwtID(UUID.randomUUID().toString());
+                    .jwtID(UUID.randomUUID().toString())
+                    .claim(CLAIM_SESSION_ID, sessionId);
             if (roles != null) {
                 claimsSetBuilder.claim(CLAIM_ROLE, roles);
             }
@@ -64,36 +66,43 @@ public class JwtTokenProvider {
         }
     }
 
-    public Optional<JWTClaimsSet> verifyToken(String token) {
+    public JWTClaimsSet verifyToken(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
             JWSObject jwsObject = JWSObject.parse(token);
 
             if (!jwsObject.verify(new MACVerifier(secretKey))) {
-                return Optional.empty();
+                throw new AppException(AccountException.INVALID_TOKEN);
             }
 
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
             Date expirationTime = claims.getExpirationTime();
 
             if (expirationTime != null && expirationTime.before(new Date())) {
-                return Optional.empty();
+                throw new AppException(AccountException.EXPIRED_TOKEN);
             }
 
-            return Optional.of(claims);
+            return claims;
         } catch (ParseException | JOSEException e) {
             throw new AppException(ResourceException.UNEXPECTED_ERROR);
         }
     }
 
     public boolean validateToken(String token) {
-        return verifyToken(token).isPresent();
+        return verifyToken(token) != null;
     }
 
     public Date getExpirationFromToken(String token) {
         return verifyToken(token)
-                .map(JWTClaimsSet::getExpirationTime)
-                .orElseThrow(() -> new AppException(AccountException.INVALID_TOKEN));
+                .getExpirationTime();
+    }
+
+    public String getSessionIdFromClaims(JWTClaimsSet claims) {
+        Object sessionId = claims.getClaim(CLAIM_SESSION_ID);
+        if (sessionId == null) {
+            throw new AppException(ResourceException.ACCESS_DENIED);
+        }
+        return sessionId.toString();
     }
 
     @SuppressWarnings("unchecked")
