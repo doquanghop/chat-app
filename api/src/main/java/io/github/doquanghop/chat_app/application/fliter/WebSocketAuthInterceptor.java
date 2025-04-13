@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,18 +31,15 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
 
     private final AccountService accountService;
 
-    /**
-     * Processes WebSocket messages before they are sent to the channel.
-     *
-     * @param message The WebSocket message.
-     * @param channel The message channel.
-     * @return The processed message or null if authentication fails.
-     */
     @Override
     public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        String wsSessionId = accessor.getSessionId();
 
+        if (accessor.getCommand() == StompCommand.DISCONNECT) {
+            return message;
+        }
+
+        String wsSessionId = accessor.getSessionId();
         log.debug("Processing WebSocket authentication for wsSessionId: {}", wsSessionId);
 
         try {
@@ -67,13 +65,6 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
         }
     }
 
-    /**
-     * Extracts the JWT token from the Authorization header.
-     *
-     * @param accessor The STOMP header accessor.
-     * @return The extracted token.
-     * @throws AppException If the token is missing.
-     */
     private String getToken(StompHeaderAccessor accessor) {
         String token = TokenExtractor.extractToken(accessor.getFirstNativeHeader("Authorization"));
         if (token == null) {
@@ -84,14 +75,6 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
         return token;
     }
 
-    /**
-     * Retrieves the application session ID from UserDetail.
-     *
-     * @param userDetail The authenticated user details.
-     * @param wsSessionId The WebSocket session ID for logging.
-     * @return The application session ID.
-     * @throws AppException If the session ID is missing.
-     */
     private String getAppSessionId(UserDetail userDetail, String wsSessionId) {
         String appSessionId = userDetail.getSessionId();
         if (appSessionId == null) {
@@ -101,13 +84,6 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
         return appSessionId;
     }
 
-    /**
-     * Initializes session attributes if not present.
-     *
-     * @param accessor The STOMP header accessor.
-     * @param wsSessionId The WebSocket session ID for logging.
-     * @return The initialized session attributes map.
-     */
     private Map<String, Object> initSessionAttributes(StompHeaderAccessor accessor, String wsSessionId) {
         Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
         if (sessionAttributes == null) {

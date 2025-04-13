@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 @Controller
 public class WebSocketEventController {
+
     @MessageMapping("/message/typing")
     @SendTo("/topic/conversation/{conversationId}")
     public TypingEvent handleTyping(TypingEvent event) {

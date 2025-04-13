@@ -66,24 +66,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Ord
                 request.getMethod(),
                 request.getRequestURI(),
                 request.getRemoteAddr(),
-                request.getHeader("User-Agent"));
-
-        log.info("Authorization header raw: {}", request.getHeader("Authorization"));
-
+                request.getHeader("User-Agent")
+        );
 
         String token = TokenExtractor.extractToken(request.getHeader("Authorization"));
 
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                log.info("Authenticating with token: {}", token);
                 UserDetail userDetail = accountService.authenticate(token);
 
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         userDetail, null, userDetail.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
-                log.info("Authentication successful for userId={} | username={}",
-                        userDetail.getId(), userDetail.getUsername());
+                log.info("Authentication successful for userId={}", userDetail.getId());
 
                 filterChain.doFilter(request, response);
                 return;
@@ -106,7 +102,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Ord
             }
         }
         log.info("No token provided in request [{} {}]", request.getMethod(), request.getRequestURI());
-
         filterChain.doFilter(request, response);
     }
 

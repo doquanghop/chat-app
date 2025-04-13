@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -29,6 +28,7 @@ public class JwtTokenProvider {
 
     private static final String CLAIM_ROLE = "role";
     private static final String CLAIM_SESSION_ID = "sessionId";
+    private static final String ISSUER = "auth-service";
 
     public TokenDTO generateTokens(TokenMetadataDTO tokenMetadata) {
         Date issuedAt = tokenMetadata.issuedAt();
@@ -45,7 +45,7 @@ public class JwtTokenProvider {
         try {
             var claimsSetBuilder = new JWTClaimsSet.Builder()
                     .subject(userId)
-                    .issuer("auth-service")
+                    .issuer(ISSUER)
                     .issueTime(issuedAt)
                     .expirationTime(expiration)
                     .jwtID(UUID.randomUUID().toString())

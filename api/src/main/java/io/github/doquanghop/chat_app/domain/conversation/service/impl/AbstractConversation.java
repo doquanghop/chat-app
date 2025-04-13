@@ -49,12 +49,7 @@ public abstract class AbstractConversation implements ConversationService {
         String currentAccountId = SecurityUtil.getCurrentUserId();
         PageRequest pageRequest = PageRequest.of(request.getPage(), request.getPageSize());
         var conversationPage = conversationRepository.findAllConversation(request.getType(), currentAccountId, pageRequest);
-        var responses = conversationPage.stream().map(conversation -> {
-            var response = ConversationResponse.builder().build();
-            long unreadCount = participantService.getUnreadMessageCount(conversation.getId());
-            response.setUnreadCount(unreadCount);
-            return response;
-        }).collect(Collectors.toList());
+        var responses = conversationPage.stream().map(this::buildConversationResponse).collect(Collectors.toList());
         return PageResponse.<ConversationResponse>builder()
                 .hasNext(conversationPage.hasNext())
                 .hasPrevious(conversationPage.hasPrevious())
@@ -67,7 +62,7 @@ public abstract class AbstractConversation implements ConversationService {
         if (!conversationRepository.existsById(conversationId)) {
             throw new AppException(ResourceException.ENTITY_NOT_FOUND);
         }
-        if (participantService.checkParticipantPermission(conversationId)) {
+        if (participantService.hasPermission(conversationId)) {
             throw new AppException(ResourceException.ACCESS_DENIED);
         }
     }
@@ -78,7 +73,7 @@ public abstract class AbstractConversation implements ConversationService {
                 .name(name)
                 .build();
         conversationRepository.save(conversation);
-        participantService.createParticipants(conversation.getId(), participants);
+        participantService.addParticipants(conversation.getId(), participants);
         return conversation;
     }
 

@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface ParticipantService {
-    boolean checkParticipantPermission(String conversationId);
+    boolean hasPermission(String conversationId);
 
-    List<Participant> createParticipants(String conversationId, Map<String, ParticipantRole> participants);
+    void addParticipants(String conversationId, Map<String, ParticipantRole> participants);
+
+    void addParticipant(String conversationId, String participantId, ParticipantRole role);
 
     Participant updateNickName(String targetAccountId, String conversationId, String nickName);
 

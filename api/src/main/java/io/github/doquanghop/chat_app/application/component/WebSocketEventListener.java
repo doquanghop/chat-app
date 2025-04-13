@@ -22,12 +22,6 @@ public class WebSocketEventListener {
 
     private final SessionService sessionService;
 
-    /**
-     * Handles WebSocket connection events by connecting the application session.
-     *
-     * @param event The WebSocket connection event.
-     * @throws AppException If the application session ID is missing or connection fails.
-     */
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
@@ -45,11 +39,6 @@ public class WebSocketEventListener {
         }
     }
 
-    /**
-     * Handles WebSocket disconnection events by disconnecting the session.
-     *
-     * @param event The WebSocket disconnection event.
-     */
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());

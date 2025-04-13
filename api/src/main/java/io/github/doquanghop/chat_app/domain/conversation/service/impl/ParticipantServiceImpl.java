@@ -23,19 +23,18 @@ public class ParticipantServiceImpl implements ParticipantService {
     private final ParticipantRepository participantRepository;
 
     @Override
-    public boolean checkParticipantPermission(String conversationId) {
+    public boolean hasPermission(String conversationId) {
         return participantRepository.existsByConversationIdAndAccountId(conversationId, SecurityUtil.getCurrentUserId());
     }
 
     @Override
-    public List<Participant> createParticipants(String conversationId, Map<String, ParticipantRole> participants) {
+    public void addParticipants(String conversationId, Map<String, ParticipantRole> participants) {
+        if (participants == null || participants.isEmpty()) {
+            throw new AppException(ResourceException.INVALID_PAYLOAD, "Participants list cannot be empty");
+        }
+
         List<Participant> participantList = participants.entrySet().stream()
-                .peek(entry -> {
-                    String accountId = entry.getKey();
-                    if (!accountService.isValidActiveAccount(accountId)) {
-                        throw new AppException(ResourceException.ENTITY_NOT_FOUND);
-                    }
-                })
+                .filter(entry -> accountService.isValidActiveAccount(entry.getKey()))
                 .map(entry -> Participant.builder()
                         .conversationId(conversationId)
                         .accountId(entry.getKey())
@@ -44,7 +43,24 @@ public class ParticipantServiceImpl implements ParticipantService {
                         .build())
                 .collect(Collectors.toList());
 
-        return participantRepository.saveAll(participantList);
+        participantRepository.saveAll(participantList);
+    }
+
+    @Override
+    public void addParticipant(String conversationId, String participantId, ParticipantRole role) {
+        if (hasPermission(conversationId)) {
+            throw new AppException(ResourceException.ACCESS_DENIED);
+        }
+        if (participantRepository.existsByConversationIdAndAccountId(conversationId, participantId)) {
+            throw new AppException(ResourceException.ENTITY_ALREADY_EXISTS);
+        }
+        Participant newParticipant = Participant.builder()
+                .conversationId(conversationId)
+                .accountId(participantId)
+                .role(role)
+                .joinedAt(LocalDateTime.now())
+                .build();
+        participantRepository.save(newParticipant);
     }
 
     @Override

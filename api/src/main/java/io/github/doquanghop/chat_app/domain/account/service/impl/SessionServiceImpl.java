@@ -19,9 +19,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Implementation of SessionService for managing user sessions.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -60,13 +57,6 @@ public class SessionServiceImpl implements SessionService {
         return session.getId();
     }
 
-    /**
-     * Retrieves the session ID for a given account and device.
-     *
-     * @param accountId The account ID.
-     * @return The session ID.
-     * @throws AppException if session is not found or HTTP context is unavailable.
-     */
     @Override
     public String getSessionId(String accountId) {
         HttpServletRequest httpRequest = getHttpServletRequest();
@@ -129,16 +119,10 @@ public class SessionServiceImpl implements SessionService {
             return new SessionStatusDTO(true, LocalDateTime.now());
         }
         LocalDateTime lastSeen = sessionRepository.findLatestLastSeenByAccountId(accountId)
-                .orElseThrow(() -> new AppException(ResourceException.ENTITY_NOT_FOUND, "Session not found"));
+                .orElse(LocalDateTime.now());
         return new SessionStatusDTO(false, lastSeen);
     }
 
-    /**
-     * Retrieves the current HTTP servlet request.
-     *
-     * @return The HTTP servlet request.
-     * @throws AppException if request context is unavailable.
-     */
     private HttpServletRequest getHttpServletRequest() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) {
@@ -148,12 +132,6 @@ public class SessionServiceImpl implements SessionService {
         return attributes.getRequest();
     }
 
-    /**
-     * Extracts the User-Agent from an HTTP request.
-     *
-     * @param request The HTTP servlet request.
-     * @return The User-Agent or "unknown" if not available.
-     */
     private String extractUserAgent(HttpServletRequest request) {
         String userAgent = request.getHeader(USER_AGENT_HEADER);
         String result = Objects.requireNonNullElse(userAgent, UNKNOWN_VALUE);
@@ -161,12 +139,6 @@ public class SessionServiceImpl implements SessionService {
         return result;
     }
 
-    /**
-     * Extracts the client IP address from an HTTP request.
-     *
-     * @param request The HTTP servlet request.
-     * @return The IP address or "unknown" if not available.
-     */
     private String extractIpAddress(HttpServletRequest request) {
         String ipAddress = request.getRemoteAddr();
         String forwardedFor = request.getHeader("X-Forwarded-For");
