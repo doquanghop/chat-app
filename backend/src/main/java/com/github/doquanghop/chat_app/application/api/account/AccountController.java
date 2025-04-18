@@ -1,0 +1,53 @@
+package com.github.doquanghop.chat_app.application.api.account;
+
+import com.github.doquanghop.chat_app.domain.account.data.dto.request.LoginRequest;
+import com.github.doquanghop.chat_app.domain.account.data.dto.request.LogoutRequest;
+import com.github.doquanghop.chat_app.domain.account.data.dto.request.RefreshTokenRequest;
+import com.github.doquanghop.chat_app.domain.account.data.dto.request.RegisterRequest;
+import com.github.doquanghop.chat_app.domain.account.data.dto.response.AccountResponse;
+import com.github.doquanghop.chat_app.domain.account.service.AccountService;
+import com.github.doquanghop.chat_app.infrastructure.annotation.logging.ActionLog;
+import com.github.doquanghop.chat_app.infrastructure.model.ApiResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/account")
+@RequiredArgsConstructor
+@Slf4j
+public class AccountController {
+    private final AccountService accountService;
+
+    @PostMapping(value = "/register")
+    @ActionLog
+    public ResponseEntity<ApiResponse<Void>> register(@RequestBody RegisterRequest request) {
+        accountService.register(request);
+        return ApiResponse.<Void>build().toEntity();
+    }
+
+    @PostMapping(value = "/login")
+    @ActionLog
+    public ResponseEntity<ApiResponse<AccountResponse>> login(@RequestBody LoginRequest request) {
+        var response = accountService.login(request);
+        return ApiResponse.<AccountResponse>build().withData(response).toEntity();
+    }
+
+    @PostMapping(value = "/logout")
+    @ActionLog
+    public ResponseEntity<ApiResponse<Void>> logout(@RequestBody LogoutRequest request) {
+        accountService.logout(request);
+        return ApiResponse.<Void>build().toEntity();
+    }
+
+    @PostMapping(value = "/refreshToken")
+    @ActionLog
+    public ResponseEntity<ApiResponse<AccountResponse>> refreshToken(@RequestBody RefreshTokenRequest request) {
+        var response = accountService.refreshToken(request);
+        return ApiResponse.<AccountResponse>build().withData(response).toEntity();
+    }
+}
